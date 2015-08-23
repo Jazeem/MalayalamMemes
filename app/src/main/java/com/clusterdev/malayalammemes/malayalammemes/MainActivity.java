@@ -1,9 +1,11 @@
 package com.clusterdev.malayalammemes.malayalammemes;
 
+import android.annotation.TargetApi;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -200,19 +202,25 @@ public class MainActivity extends ActionBarActivity {
             return bmp;
         }
 
+
         @Override
         protected void onPostExecute(Bitmap result) {
             super.onPostExecute(result);
             //Do anything with response..
 
             //ImageView Setup
-            ImageView imageView = new ImageView(context);
+            DynamicImageView imageView =  new DynamicImageView(context, null);
             //setting image resource
             imageView.setImageBitmap(result);
             //setting image position
-            imageView.setLayoutParams(new ViewGroup.LayoutParams(
-                    ViewGroup.LayoutParams.MATCH_PARENT,
-                    ViewGroup.LayoutParams.WRAP_CONTENT));
+            LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.MATCH_PARENT,
+                    LinearLayout.LayoutParams.WRAP_CONTENT);
+            lp.setMargins(0, 0, 0, 32);
+            //imageView.setLayoutParams();
+            imageView.setLayoutParams(lp);
+            imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
+
 
             //adding view to layout
             linearLayout.addView(imageView);
