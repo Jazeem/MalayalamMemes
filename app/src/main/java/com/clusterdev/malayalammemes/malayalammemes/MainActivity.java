@@ -1,5 +1,6 @@
 package com.clusterdev.malayalammemes.malayalammemes;
 
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
@@ -8,7 +9,9 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import org.apache.http.HttpEntity;
@@ -35,13 +38,19 @@ public class MainActivity extends ActionBarActivity {
     private String PhotoID = null;
     private String baseUrl = "https://graph.facebook.com/v2.4/";
     private String OAuth = "151023885236941|y1tgdIybKDV1JD6etX0AUehPFF0";
+    private int counter = 0;
+    private JSONArray postArray = null;
+    private Context context;
+    private LinearLayout linearLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        tv = (TextView)findViewById(R.id.textview);
-        img = (ImageView)findViewById(R.id.img_view);
+
+
+        linearLayout = (LinearLayout)findViewById(R.id.linearlayout);
+        context = this;
         new RequestPost().execute();
     }
 
@@ -67,10 +76,10 @@ public class MainActivity extends ActionBarActivity {
 
         return super.onOptionsItemSelected(item);
     }
-    class RequestPost extends AsyncTask<String, String, String> {
+    class RequestPost extends AsyncTask<Integer, String, String> {
 
         @Override
-        protected String doInBackground(String... uri) {
+        protected String doInBackground(Integer... uri) {
             HttpClient httpclient = new DefaultHttpClient();
             HttpResponse response;
             String responseString = null;
@@ -81,9 +90,9 @@ public class MainActivity extends ActionBarActivity {
             try {
                 response = httpclient.execute(httpGet);
                 JSONObject json = new JSONObject(EntityUtils.toString(response.getEntity()));
-                JSONArray data = (JSONArray) json.get("data");
+                postArray = (JSONArray) json.get("data");
 
-                responseString =  data.getJSONObject(0).get("id").toString();
+                responseString =  postArray.getJSONObject(counter).get("id").toString();
 
                 Log.v("id", responseString);
             } catch (IOException e) {
@@ -196,7 +205,27 @@ public class MainActivity extends ActionBarActivity {
             super.onPostExecute(result);
             //Do anything with response..
 
-            img.setImageBitmap(result);
+            //ImageView Setup
+            ImageView imageView = new ImageView(context);
+            //setting image resource
+            imageView.setImageBitmap(result);
+            //setting image position
+            imageView.setLayoutParams(new ViewGroup.LayoutParams(
+                    ViewGroup.LayoutParams.MATCH_PARENT,
+                    ViewGroup.LayoutParams.WRAP_CONTENT));
+
+            //adding view to layout
+            linearLayout.addView(imageView);
+
+            counter++;
+            if(counter < 24) {
+                try {
+                    PostID = postArray.getJSONObject(counter).get("id").toString();
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                new RequestID().execute();
+            }
 
 
         }
