@@ -6,6 +6,8 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.os.Build;
+import android.os.Handler;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -44,16 +46,34 @@ public class MainActivity extends ActionBarActivity {
     private JSONArray postArray = null;
     private Context context;
     private LinearLayout linearLayout;
+    private SwipeRefreshLayout swipeRefreshLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-
-        linearLayout = (LinearLayout)findViewById(R.id.linearlayout);
+        swipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipe);
+        linearLayout = (LinearLayout) findViewById(R.id.linearlayout);
         context = this;
         new RequestPost().execute();
+        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                swipeRefreshLayout.setRefreshing(true);
+                Log.d("Swipe", "Refreshing Number");
+                if (counter < 24) {
+                    try {
+                        PostID = postArray.getJSONObject(counter).get("id").toString();
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                    new RequestID().execute();
+                }
+                counter++;
+            }
+        });
+
     }
 
 
@@ -78,6 +98,7 @@ public class MainActivity extends ActionBarActivity {
 
         return super.onOptionsItemSelected(item);
     }
+
     class RequestPost extends AsyncTask<Integer, String, String> {
 
         @Override
@@ -87,14 +108,14 @@ public class MainActivity extends ActionBarActivity {
             String responseString = null;
 
 
-            HttpGet httpGet = new HttpGet(baseUrl+"internationalchaluunion/posts");
-            httpGet.setHeader("Authorization", "OAuth "+OAuth);
+            HttpGet httpGet = new HttpGet(baseUrl + "internationalchaluunion/posts");
+            httpGet.setHeader("Authorization", "OAuth " + OAuth);
             try {
                 response = httpclient.execute(httpGet);
                 JSONObject json = new JSONObject(EntityUtils.toString(response.getEntity()));
                 postArray = (JSONArray) json.get("data");
 
-                responseString =  postArray.getJSONObject(counter).get("id").toString();
+                responseString = postArray.getJSONObject(counter).get("id").toString();
 
                 Log.v("id", responseString);
             } catch (IOException e) {
@@ -114,31 +135,35 @@ public class MainActivity extends ActionBarActivity {
 
 
             PostID = result;
-            new RequestID().execute();
+            //new RequestID().execute();
 
         }
     }
+
     class RequestID extends AsyncTask<String, String, String> {
 
         @Override
         protected String doInBackground(String... uri) {
-            HttpClient httpclient = new DefaultHttpClient();
-            HttpResponse response;
+
             String responseString = null;
 
-            String baseUrl = "https://graph.facebook.com/v2.4/";
-            HttpGet httpGet;
-            httpGet = new HttpGet(baseUrl+PostID+"?fields=object_id");
-            httpGet.setHeader("Authorization", "OAuth "+OAuth);
-            try {
-                response = httpclient.execute(httpGet);
-                JSONObject json = new JSONObject(EntityUtils.toString(response.getEntity()));
-                responseString = json.get("object_id").toString();
-                Log.v("object_id", responseString);
-            } catch (IOException e) {
-                e.printStackTrace();
-            } catch (JSONException e) {
-                e.printStackTrace();
+            if(PostID != null) {
+                HttpClient httpclient = new DefaultHttpClient();
+                HttpResponse response;
+                String baseUrl = "https://graph.facebook.com/v2.4/";
+                HttpGet httpGet;
+                httpGet = new HttpGet(baseUrl + PostID + "?fields=object_id");
+                httpGet.setHeader("Authorization", "OAuth " + OAuth);
+                try {
+                    response = httpclient.execute(httpGet);
+                    JSONObject json = new JSONObject(EntityUtils.toString(response.getEntity()));
+                    responseString = json.get("object_id").toString();
+                    Log.v("object_id", responseString);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
             }
 
 
@@ -149,11 +174,13 @@ public class MainActivity extends ActionBarActivity {
         protected void onPostExecute(String result) {
             super.onPostExecute(result);
             //Do anything with response..
-            PhotoID = result;
-            new RequestImageURL().execute();
-
+            if(result != null) {
+                PhotoID = result;
+                new RequestImageURL().execute();
+            }
         }
     }
+
     class RequestImageURL extends AsyncTask<String, String, Bitmap> {
 
         @Override
@@ -164,8 +191,8 @@ public class MainActivity extends ActionBarActivity {
             Bitmap bmp = null;
             String baseUrl = "https://graph.facebook.com/v2.4/";
             HttpGet httpGet;
-            httpGet = new HttpGet(baseUrl+PhotoID+"/picture");
-            httpGet.setHeader("Authorization", "OAuth "+OAuth);
+            httpGet = new HttpGet(baseUrl + PhotoID + "/picture");
+            httpGet.setHeader("Authorization", "OAuth " + OAuth);
             try {
                 response = httpclient.execute(httpGet);
                 Log.v("url.raw", response.toString());
@@ -174,7 +201,7 @@ public class MainActivity extends ActionBarActivity {
 //                responseString = json.getJSONObject("data").get("url").toString();
 //                Log.v("url", responseString);
 
-                String entityContents="";
+                String entityContents = "";
                 HttpEntity responseEntity = response.getEntity();
                 BufferedHttpEntity httpEntity = null;
                 try {
@@ -193,7 +220,6 @@ public class MainActivity extends ActionBarActivity {
                 bmp = BitmapFactory.decodeStream(imageStream);
 
 
-
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -209,7 +235,7 @@ public class MainActivity extends ActionBarActivity {
             //Do anything with response..
 
             //ImageView Setup
-            DynamicImageView imageView =  new DynamicImageView(context, null);
+            DynamicImageView imageView = new DynamicImageView(context, null);
             //setting image resource
             imageView.setImageBitmap(result);
             //setting image position
@@ -223,17 +249,9 @@ public class MainActivity extends ActionBarActivity {
 
 
             //adding view to layout
-            linearLayout.addView(imageView);
+            linearLayout.addView(imageView, 0);
+            swipeRefreshLayout.setRefreshing(false);
 
-            counter++;
-            if(counter < 24) {
-                try {
-                    PostID = postArray.getJSONObject(counter).get("id").toString();
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-                new RequestID().execute();
-            }
 
 
         }
