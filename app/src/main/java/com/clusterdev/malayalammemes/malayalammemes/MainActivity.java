@@ -13,6 +13,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -56,6 +57,7 @@ public class MainActivity extends ActionBarActivity {
         setContentView(R.layout.activity_main);
 
         swipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipe);
+
         linearLayout = (LinearLayout) findViewById(R.id.linearlayout);
         context = this;
         new RequestPost().execute(baseUrl + "internationalchaluunion/posts");
