@@ -47,6 +47,8 @@ public class MainActivity extends ActionBarActivity {
     private Context context;
     private LinearLayout linearLayout;
     private SwipeRefreshLayout swipeRefreshLayout;
+    private String nextUrl = null;
+    private int counter_limit;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,21 +58,28 @@ public class MainActivity extends ActionBarActivity {
         swipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipe);
         linearLayout = (LinearLayout) findViewById(R.id.linearlayout);
         context = this;
-        new RequestPost().execute();
+        new RequestPost().execute(baseUrl + "internationalchaluunion/posts");
         swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                swipeRefreshLayout.setRefreshing(true);
-                Log.d("Swipe", "Refreshing Number");
-                if (counter < 24) {
-                    try {
-                        PostID = postArray.getJSONObject(counter).get("id").toString();
-                    } catch (JSONException e) {
-                        e.printStackTrace();
+                if (PostID != null) {
+                    swipeRefreshLayout.setRefreshing(true);
+                    Log.d("Swipe", "Refreshing");
+                    if (counter < counter_limit) {
+                        try {
+                            PostID = postArray.getJSONObject(counter).get("id").toString();
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                        new RequestID().execute();
                     }
-                    new RequestID().execute();
+                    else{
+                        counter = 0;
+                        new RequestPost().execute(nextUrl);
+                    }
+
+                    counter++;
                 }
-                counter++;
             }
         });
 
@@ -99,22 +108,24 @@ public class MainActivity extends ActionBarActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    class RequestPost extends AsyncTask<Integer, String, String> {
+    class RequestPost extends AsyncTask<String, String, String> {
 
         @Override
-        protected String doInBackground(Integer... uri) {
+        protected String doInBackground(String... uri) {
             HttpClient httpclient = new DefaultHttpClient();
             HttpResponse response;
             String responseString = null;
 
 
-            HttpGet httpGet = new HttpGet(baseUrl + "internationalchaluunion/posts");
+            HttpGet httpGet = new HttpGet(uri[0]);
             httpGet.setHeader("Authorization", "OAuth " + OAuth);
             try {
                 response = httpclient.execute(httpGet);
                 JSONObject json = new JSONObject(EntityUtils.toString(response.getEntity()));
                 postArray = (JSONArray) json.get("data");
-
+                counter_limit = postArray.length();
+                nextUrl = json.getJSONObject("paging").getString("next").toString();
+                Log.v("nextUrl", nextUrl);
                 responseString = postArray.getJSONObject(counter).get("id").toString();
 
                 Log.v("id", responseString);
@@ -135,7 +146,8 @@ public class MainActivity extends ActionBarActivity {
 
 
             PostID = result;
-            //new RequestID().execute();
+            counter++;
+            new RequestID().execute();
 
         }
     }
