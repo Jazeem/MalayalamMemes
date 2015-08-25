@@ -19,6 +19,9 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.orangegangsters.github.swipyrefreshlayout.library.SwipyRefreshLayout;
+import com.orangegangsters.github.swipyrefreshlayout.library.SwipyRefreshLayoutDirection;
+
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
@@ -47,7 +50,7 @@ public class MainActivity extends ActionBarActivity {
     private JSONArray postArray = null;
     private Context context;
     private LinearLayout linearLayout;
-    private SwipeRefreshLayout swipeRefreshLayout;
+    private SwipyRefreshLayout swipeRefreshLayout;
     private String nextUrl = null;
     private int counter_limit;
 
@@ -56,14 +59,16 @@ public class MainActivity extends ActionBarActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        swipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipe);
+        swipeRefreshLayout = (SwipyRefreshLayout) findViewById(R.id.swipe);
 
         linearLayout = (LinearLayout) findViewById(R.id.linearlayout);
         context = this;
         new RequestPost().execute(baseUrl + "internationalchaluunion/posts");
-        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+        swipeRefreshLayout.setDirection(SwipyRefreshLayoutDirection.BOTTOM);
+        swipeRefreshLayout.setOnRefreshListener(new SwipyRefreshLayout.OnRefreshListener(){
+
             @Override
-            public void onRefresh() {
+            public void onRefresh(SwipyRefreshLayoutDirection swipyRefreshLayoutDirection) {
                 if (PostID != null) {
                     swipeRefreshLayout.setRefreshing(true);
                     Log.d("Swipe", "Refreshing");
@@ -84,7 +89,6 @@ public class MainActivity extends ActionBarActivity {
                 }
             }
         });
-
     }
 
 
@@ -263,7 +267,7 @@ public class MainActivity extends ActionBarActivity {
 
 
             //adding view to layout
-            linearLayout.addView(imageView, 0);
+            linearLayout.addView(imageView);
             swipeRefreshLayout.setRefreshing(false);
 
 
