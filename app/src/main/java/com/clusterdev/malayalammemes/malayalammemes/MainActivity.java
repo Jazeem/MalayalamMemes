@@ -53,7 +53,8 @@ public class MainActivity extends Activity {
     private LinearLayout linearLayout;
     private SwipyRefreshLayout swipeRefreshLayout;
     private String nextUrl = null;
-    private int counter_limit;
+    private int counterLimit;
+    private int imageCount = 6;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -73,7 +74,7 @@ public class MainActivity extends Activity {
                 if (PostID != null) {
                     swipeRefreshLayout.setRefreshing(true);
                     Log.d("Swipe", "Refreshing");
-                    if (counter < counter_limit) {
+                    if (counter < counterLimit) {
                         try {
                             PostID = postArray.getJSONObject(counter).get("id").toString();
                         } catch (JSONException e) {
@@ -110,7 +111,7 @@ public class MainActivity extends Activity {
                 response = httpclient.execute(httpGet);
                 JSONObject json = new JSONObject(EntityUtils.toString(response.getEntity()));
                 postArray = (JSONArray) json.get("data");
-                counter_limit = postArray.length();
+                counterLimit = postArray.length();
                 nextUrl = json.getJSONObject("paging").getString("next").toString();
                 Log.v("nextUrl", nextUrl);
                 responseString = postArray.getJSONObject(counter).get("id").toString();
