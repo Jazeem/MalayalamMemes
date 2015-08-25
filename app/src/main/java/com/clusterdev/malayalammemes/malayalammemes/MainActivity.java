@@ -1,6 +1,7 @@
 package com.clusterdev.malayalammemes.malayalammemes;
 
 import android.annotation.TargetApi;
+import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -38,7 +39,7 @@ import java.io.IOException;
 import java.io.InputStream;
 
 
-public class MainActivity extends ActionBarActivity {
+public class MainActivity extends Activity {
 
     private TextView tv;
     private ImageView img;
@@ -92,27 +93,7 @@ public class MainActivity extends ActionBarActivity {
     }
 
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_main, menu);
-        return true;
-    }
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
-    }
 
     class RequestPost extends AsyncTask<String, String, String> {
 
@@ -264,8 +245,6 @@ public class MainActivity extends ActionBarActivity {
             //imageView.setLayoutParams();
             imageView.setLayoutParams(lp);
             imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
-
-
             //adding view to layout
             linearLayout.addView(imageView);
             swipeRefreshLayout.setRefreshing(false);
