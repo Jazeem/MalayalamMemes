@@ -3,6 +3,7 @@ package com.clusterdev.malayalammemes.malayalammemes;
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
@@ -35,8 +36,11 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+
+import uk.co.senab.photoview.PhotoViewAttacher;
 
 
 public class MainActivity extends Activity {
@@ -55,6 +59,7 @@ public class MainActivity extends Activity {
     private String nextUrl = null;
     private int counterLimit;
     private int imageCount = 6;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -224,13 +229,13 @@ public class MainActivity extends Activity {
                 e.printStackTrace();
             }
 
-
+            //bmp = Bitmap.createScaledBitmap(bmp, 500, 500, false);
             return bmp;
         }
 
 
         @Override
-        protected void onPostExecute(Bitmap result) {
+        protected void onPostExecute(final Bitmap result) {
             super.onPostExecute(result);
             //Do anything with response..
 
@@ -247,6 +252,19 @@ public class MainActivity extends Activity {
             imageView.setLayoutParams(lp);
             imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
             //adding view to layout
+            imageView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent intent = new Intent(MainActivity.this, PhotoViewer.class);
+                    ByteArrayOutputStream stream = new ByteArrayOutputStream();
+                    result.compress(Bitmap.CompressFormat.PNG, 100, stream);
+                    byte[] bytes = stream.toByteArray();
+                    intent.putExtra("BMP",bytes);
+
+                    startActivity(intent);
+                }
+            });
+
             linearLayout.addView(imageView);
             swipeRefreshLayout.setRefreshing(false);
 
