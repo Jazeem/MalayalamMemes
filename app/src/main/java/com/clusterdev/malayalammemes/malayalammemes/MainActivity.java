@@ -1,7 +1,9 @@
 package com.clusterdev.malayalammemes.malayalammemes;
 
 import android.annotation.TargetApi;
+import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
@@ -34,11 +36,14 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
+import uk.co.senab.photoview.PhotoViewAttacher;
 
-public class MainActivity extends ActionBarActivity {
+
+public class MainActivity extends Activity {
 
     private TextView tv;
     private ImageView img;
@@ -52,9 +57,11 @@ public class MainActivity extends ActionBarActivity {
     private LinearLayout linearLayout;
     private SwipyRefreshLayout swipeRefreshLayout;
     private String nextUrl = null;
-    private int counter_limit;
     private String pageName = "Troll.Malayalam/posts";
     private  int pictureCount = 0;
+    private int counterLimit;
+    private int imageCount = 6;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -77,45 +84,19 @@ public class MainActivity extends ActionBarActivity {
         });
     }
 
-    public void func()
-    {
-        if (counter < counter_limit) {
+    public void func() {
+        if (counter < counterLimit) {
             try {
                 PostID = postArray.getJSONObject(counter).get("id").toString();
             } catch (JSONException e) {
                 e.printStackTrace();
             }
             new RequestID().execute();
-        }
-        else{
+        } else {
             counter = 0;
             new RequestPost().execute(nextUrl);
         }
-
         counter++;
-    }
-
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_main, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
     }
 
     class RequestPost extends AsyncTask<String, String, String> {
@@ -133,7 +114,7 @@ public class MainActivity extends ActionBarActivity {
                 response = httpclient.execute(httpGet);
                 JSONObject json = new JSONObject(EntityUtils.toString(response.getEntity()));
                 postArray = (JSONArray) json.get("data");
-                counter_limit = postArray.length();
+                counterLimit = postArray.length();
                 nextUrl = json.getJSONObject("paging").getString("next").toString();
                 Log.v("nextUrl", nextUrl);
                 responseString = postArray.getJSONObject(counter).get("id").toString();
@@ -177,9 +158,8 @@ public class MainActivity extends ActionBarActivity {
                 try {
                     response = httpclient.execute(httpGet);
                     JSONObject json = new JSONObject(EntityUtils.toString(response.getEntity()));
-                    if(json.has("object_id")) {
+                    if(json.has("object_id"))
                         responseString = json.get("object_id").toString();
-                    }
                     //Log.v("object_id", responseString);
                 } catch (IOException e) {
                     e.printStackTrace();
@@ -201,9 +181,8 @@ public class MainActivity extends ActionBarActivity {
                 PhotoID = result;
                 new RequestImageURL().execute();
             }
-            else{
+            else
                 func();
-            }
         }
     }
 
@@ -250,13 +229,23 @@ public class MainActivity extends ActionBarActivity {
                 e.printStackTrace();
             }
 
+            int maxImageSize = 500;
+            //bmp = Bitmap.createScaledBitmap(bmp, 500, 500, false);
+            float ratio = Math.min(
+                    (float) maxImageSize / bmp.getWidth(),
+                    (float) maxImageSize / bmp.getHeight());
+            int width = Math.round((float) ratio * bmp.getWidth());
+            int height = Math.round((float) ratio * bmp.getHeight());
 
-            return bmp;
+            Bitmap newBitmap = Bitmap.createScaledBitmap(bmp, width,
+                    height, true);
+            return newBitmap;
+
         }
 
 
         @Override
-        protected void onPostExecute(Bitmap result) {
+        protected void onPostExecute(final Bitmap result) {
             super.onPostExecute(result);
             //Do anything with response..
 
@@ -272,9 +261,20 @@ public class MainActivity extends ActionBarActivity {
             //imageView.setLayoutParams();
             imageView.setLayoutParams(lp);
             imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
-
-
             //adding view to layout
+            imageView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent intent = new Intent(MainActivity.this, PhotoViewer.class);
+                    ByteArrayOutputStream stream = new ByteArrayOutputStream();
+                    result.compress(Bitmap.CompressFormat.PNG, 100, stream);
+                    byte[] bytes = stream.toByteArray();
+                    intent.putExtra("BMP",bytes);
+
+                    startActivity(intent);
+                }
+            });
+
             linearLayout.addView(imageView);
             //counter++;
             if(pictureCount<5){
@@ -285,9 +285,6 @@ public class MainActivity extends ActionBarActivity {
                 pictureCount = 0;
                 swipeRefreshLayout.setRefreshing(false);
             }
-
-
-
         }
     }
 }
