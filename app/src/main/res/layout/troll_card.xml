@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent"
+
+        android:paddingBottom="@dimen/card_margin_bottom"
+        android:id="@+id/base_layout">
+        <View
+            android:layout_width="fill_parent"
+            android:layout_height="@dimen/card_top_height"
+            android:background="@drawable/card_top">
+
+        </View>
+        <com.clusterdev.malayalammemes.malayalammemes.DynamicImageView
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/dynamic_image_view"
+            />
+        <FrameLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content">
+            <View
+                android:layout_width="fill_parent"
+                android:layout_height="@dimen/card_bottom_height"
+                android:background="@drawable/card_bottom"/>
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="@dimen/card_button_height"
+                android:src="@drawable/share"
+                android:id="@+id/whatsapp_share"
+                android:layout_gravity="center_vertical"
+                android:layout_marginLeft="@dimen/card_button_margin"/>
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="@dimen/card_button_height"
+                android:src="@drawable/like_grey"
+                android:layout_gravity="center_vertical|right"
+
+                android:layout_marginRight="@dimen/card_button_margin"/>
+        </FrameLayout>
+
+
+
+</LinearLayout>

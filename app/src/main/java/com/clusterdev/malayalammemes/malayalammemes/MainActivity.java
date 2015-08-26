@@ -6,13 +6,16 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
+import android.os.Environment;
 import android.os.Handler;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -37,6 +40,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -252,38 +257,69 @@ public class MainActivity extends Activity {
             super.onPostExecute(result);
             //Do anything with response..
 
+
+
+            LayoutInflater vi = (LayoutInflater) getApplicationContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            View v = vi.inflate(R.layout.troll_card, null);
+
             //ImageView Setup
-            DynamicImageView imageView = new DynamicImageView(context, null);
+            DynamicImageView imageView = (DynamicImageView) v.findViewById(R.id.dynamic_image_view);
             //setting image resource
             imageView.setImageBitmap(result);
             //setting image position
-            LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
-                    LinearLayout.LayoutParams.MATCH_PARENT,
-                    LinearLayout.LayoutParams.WRAP_CONTENT);
-            lp.setMargins(0, 0, 0, 32);
+
             //imageView.setLayoutParams();
-            imageView.setLayoutParams(lp);
-            imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
             //adding view to layout
-            imageView.setOnClickListener(new View.OnClickListener() {
+//            imageView.setOnClickListener(new View.OnClickListener() {
+//                @Override
+//                public void onClick(View v) {
+//                    Intent intent = new Intent(MainActivity.this, PhotoViewer.class);
+//                    ByteArrayOutputStream stream = new ByteArrayOutputStream();
+//                    result.compress(Bitmap.CompressFormat.PNG, 100, stream);
+//                    byte[] bytes = stream.toByteArray();
+//                    intent.putExtra("BMP",bytes);
+//
+//                    startActivity(intent);
+//                }
+//            });
+
+            ImageView share = (ImageView) v.findViewById(R.id.whatsapp_share);
+            share.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Intent intent = new Intent(MainActivity.this, PhotoViewer.class);
-                    ByteArrayOutputStream stream = new ByteArrayOutputStream();
-                    result.compress(Bitmap.CompressFormat.PNG, 100, stream);
-                    byte[] bytes = stream.toByteArray();
-                    intent.putExtra("BMP",bytes);
-
-                    startActivity(intent);
+                    Intent share = new Intent(Intent.ACTION_SEND);
+                    share.setType("image/*");
+                    ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+                    result.compress(Bitmap.CompressFormat.JPEG, 100, bytes);
+                    File f = new File(Environment.getExternalStorageDirectory() + File.separator + "temporary_file.jpg");
+                    try {
+                        f.createNewFile();
+                        FileOutputStream fo = new FileOutputStream(f);
+                        fo.write(bytes.toByteArray());
+                        fo.close();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                    share.putExtra(Intent.EXTRA_STREAM, Uri.fromFile(f));
+                    share.putExtra(Intent.EXTRA_TEXT,"Awesome troll send through awesome app made by awesome developer");
+                    share.setPackage("com.whatsapp");
+                    startActivityForResult(Intent.createChooser(share, "Share!"), 0);
                 }
             });
 
-            linearLayout.addView(imageView);
+            linearLayout.addView(v);
             swipeRefreshLayout.setRefreshing(false);
 
 
 
         }
+    }
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        Log.v("check", "delete");
+        File f = new File(Environment.getExternalStorageDirectory() + File.separator + "temporary_file.jpg");
+        f.delete();
     }
 }
 
