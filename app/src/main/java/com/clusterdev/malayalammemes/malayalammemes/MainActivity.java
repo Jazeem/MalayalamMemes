@@ -162,8 +162,9 @@ public class MainActivity extends Activity {
                 try {
                     response = httpclient.execute(httpGet);
                     JSONObject json = new JSONObject(EntityUtils.toString(response.getEntity()));
-                    responseString = json.get("object_id").toString();
-                    Log.v("object_id", responseString);
+                    if(json.has("object_id"))
+                        responseString = json.get("object_id").toString();
+                    //Log.v("object_id", responseString);
                 } catch (IOException e) {
                     e.printStackTrace();
                 } catch (JSONException e) {
@@ -183,6 +184,8 @@ public class MainActivity extends Activity {
                 PhotoID = result;
                 new RequestImageURL().execute();
             }
+            else
+                swipeRefreshLayout.setRefreshing(false);
         }
     }
 
@@ -229,8 +232,18 @@ public class MainActivity extends Activity {
                 e.printStackTrace();
             }
 
+            int maxImageSize = 500;
             //bmp = Bitmap.createScaledBitmap(bmp, 500, 500, false);
-            return bmp;
+            float ratio = Math.min(
+                    (float) maxImageSize / bmp.getWidth(),
+                    (float) maxImageSize / bmp.getHeight());
+            int width = Math.round((float) ratio * bmp.getWidth());
+            int height = Math.round((float) ratio * bmp.getHeight());
+
+            Bitmap newBitmap = Bitmap.createScaledBitmap(bmp, width,
+                    height, true);
+            return newBitmap;
+            
         }
 
 
