@@ -53,17 +53,16 @@ public class MainActivity extends ActionBarActivity {
     private SwipyRefreshLayout swipeRefreshLayout;
     private String nextUrl = null;
     private int counter_limit;
-
+    private String pageName = "Troll.Malayalam/posts";
+    private  int pictureCount = 0;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
         swipeRefreshLayout = (SwipyRefreshLayout) findViewById(R.id.swipe);
-
         linearLayout = (LinearLayout) findViewById(R.id.linearlayout);
         context = this;
-        new RequestPost().execute(baseUrl + "internationalchaluunion/posts");
+        new RequestPost().execute(baseUrl + pageName);
         swipeRefreshLayout.setDirection(SwipyRefreshLayoutDirection.BOTTOM);
         swipeRefreshLayout.setOnRefreshListener(new SwipyRefreshLayout.OnRefreshListener(){
 
@@ -72,23 +71,28 @@ public class MainActivity extends ActionBarActivity {
                 if (PostID != null) {
                     swipeRefreshLayout.setRefreshing(true);
                     Log.d("Swipe", "Refreshing");
-                    if (counter < counter_limit) {
-                        try {
-                            PostID = postArray.getJSONObject(counter).get("id").toString();
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-                        new RequestID().execute();
-                    }
-                    else{
-                        counter = 0;
-                        new RequestPost().execute(nextUrl);
-                    }
-
-                    counter++;
+                    func();
                 }
             }
         });
+    }
+
+    public void func()
+    {
+        if (counter < counter_limit) {
+            try {
+                PostID = postArray.getJSONObject(counter).get("id").toString();
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            new RequestID().execute();
+        }
+        else{
+            counter = 0;
+            new RequestPost().execute(nextUrl);
+        }
+
+        counter++;
     }
 
 
@@ -141,7 +145,6 @@ public class MainActivity extends ActionBarActivity {
                 e.printStackTrace();
             }
 
-
             return responseString;
         }
 
@@ -149,7 +152,6 @@ public class MainActivity extends ActionBarActivity {
         protected void onPostExecute(String result) {
             super.onPostExecute(result);
             //Do anything with response..
-
 
             PostID = result;
             counter++;
@@ -175,8 +177,10 @@ public class MainActivity extends ActionBarActivity {
                 try {
                     response = httpclient.execute(httpGet);
                     JSONObject json = new JSONObject(EntityUtils.toString(response.getEntity()));
-                    responseString = json.get("object_id").toString();
-                    Log.v("object_id", responseString);
+                    if(json.has("object_id")) {
+                        responseString = json.get("object_id").toString();
+                    }
+                    //Log.v("object_id", responseString);
                 } catch (IOException e) {
                     e.printStackTrace();
                 } catch (JSONException e) {
@@ -190,11 +194,15 @@ public class MainActivity extends ActionBarActivity {
 
         @Override
         protected void onPostExecute(String result) {
+
             super.onPostExecute(result);
             //Do anything with response..
             if(result != null) {
                 PhotoID = result;
                 new RequestImageURL().execute();
+            }
+            else{
+                func();
             }
         }
     }
@@ -268,7 +276,15 @@ public class MainActivity extends ActionBarActivity {
 
             //adding view to layout
             linearLayout.addView(imageView);
-            swipeRefreshLayout.setRefreshing(false);
+            //counter++;
+            if(pictureCount<5){
+                func();
+                pictureCount++;
+            }
+            else {
+                pictureCount = 0;
+                swipeRefreshLayout.setRefreshing(false);
+            }
 
 
 
