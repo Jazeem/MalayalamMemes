@@ -24,6 +24,7 @@ import uk.co.senab.photoview.PhotoView;
 public class PhotoViewer extends Activity {
     private PhotoView photoView;
     private Button share;
+    private  Button favourite;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
