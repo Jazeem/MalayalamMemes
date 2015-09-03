@@ -273,18 +273,18 @@ public class Newsfeed extends Fragment {
 
             //imageView.setLayoutParams();
             //adding view to layout
-//            imageView.setOnClickListener(new View.OnClickListener() {
-//                @Override
-//                public void onClick(View v) {
-//                    Intent intent = new Intent(MainActivity.this, PhotoViewer.class);
-//                    ByteArrayOutputStream stream = new ByteArrayOutputStream();
-//                    result.compress(Bitmap.CompressFormat.PNG, 100, stream);
-//                    byte[] bytes = stream.toByteArray();
-//                    intent.putExtra("BMP",bytes);
-//
-//                    startActivity(intent);
-//                }
-//            });
+            imageView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent intent = new Intent(getActivity(), PhotoViewer.class);
+                    ByteArrayOutputStream stream = new ByteArrayOutputStream();
+                    result.compress(Bitmap.CompressFormat.PNG, 100, stream);
+                    byte[] bytes = stream.toByteArray();
+                    intent.putExtra("BMP",bytes);
+
+                    startActivity(intent);
+                }
+            });
 
             ImageView share = (ImageView) cardView.findViewById(R.id.whatsapp_share);
             share.setOnClickListener(new View.OnClickListener() {
@@ -421,4 +421,8 @@ public class Newsfeed extends Fragment {
         File f = new File(Environment.getExternalStorageDirectory() + File.separator + "temporary_file.jpg");
         f.delete();
     }
+    public LinearLayout getLinearLayout(){
+        return linearLayout;
+    }
+
 }

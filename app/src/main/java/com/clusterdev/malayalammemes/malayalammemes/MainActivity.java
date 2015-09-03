@@ -8,6 +8,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.LinearLayout;
 
 /**
  * Created by Edwin on 15/02/2015.
@@ -64,5 +65,10 @@ public class MainActivity extends RefreshableFragmentActivity {
     @Override
     public void refreshFavourites() {
         adapter.favourites.refreshView();
+    }
+
+    @Override
+    public LinearLayout getNewsfeedLinearLayout() {
+        return adapter.newsfeed.getLinearLayout();
     }
 }

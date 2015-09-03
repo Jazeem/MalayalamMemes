@@ -2,6 +2,7 @@ package com.clusterdev.malayalammemes.malayalammemes;
 
 import android.annotation.TargetApi;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -22,6 +23,8 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.ByteArrayOutputStream;
+
 /**
  * Created by Jazeem on 31/08/15.
  */
@@ -29,12 +32,12 @@ public class Favourite extends Fragment {
 
 
 
-
+    private RefreshableFragmentActivity activity;
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.favourite, container, false);
-
+        activity = (RefreshableFragmentActivity)getActivity();
         return view;
     }
 
@@ -75,7 +78,7 @@ public class Favourite extends Fragment {
                     e.printStackTrace();
                 }
                 byte[] array = Base64.decode(byteEncoded, Base64.DEFAULT);
-                Bitmap bmp = BitmapFactory.decodeByteArray(array, 0, array.length);
+                final Bitmap bmp = BitmapFactory.decodeByteArray(array, 0, array.length);
                 LayoutInflater vi = (LayoutInflater) getActivity().getApplicationContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
                 final View card = vi.inflate(R.layout.troll_card, null);
                 card.setTag(R.string.tag_photo_id, photoID);
@@ -84,6 +87,18 @@ public class Favourite extends Fragment {
                 DynamicImageView imageView = (DynamicImageView) card.findViewById(R.id.dynamic_image_view);
                 //setting image resource
                 imageView.setImageBitmap(bmp);
+                imageView.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        Intent intent = new Intent(getActivity(), PhotoViewer.class);
+                        ByteArrayOutputStream stream = new ByteArrayOutputStream();
+                        bmp.compress(Bitmap.CompressFormat.PNG, 100, stream);
+                        byte[] bytes = stream.toByteArray();
+                        intent.putExtra("BMP",bytes);
+
+                        startActivity(intent);
+                    }
+                });
 
                 ImageView fav = (ImageView)card.findViewById(R.id.favourite_button);
                 fav.setImageResource(R.drawable.like);
@@ -111,6 +126,19 @@ public class Favourite extends Fragment {
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
+                        LinearLayout newsfeedLinearLayout = activity.getNewsfeedLinearLayout();
+                        int i;
+                        for (i=0;i<newsfeedLinearLayout.getChildCount();i++){
+                            if(newsfeedLinearLayout.getChildAt(i).getTag(R.string.tag_photo_id).equals(card.getTag(R.string.tag_photo_id)))
+                                break;
+                        }
+                        if (i != newsfeedLinearLayout.getChildCount()){
+                            View cardFound = newsfeedLinearLayout.getChildAt(i);
+                            ImageView imageViewFound = (ImageView) cardFound.findViewById(R.id.favourite_button);
+                            imageViewFound.setImageResource(R.drawable.like_grey);
+
+                        }
+
                         editor.putString("BYTE_ARRAY", finalJsonObject.toString());
                         editor.commit();
 
