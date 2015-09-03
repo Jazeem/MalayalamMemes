@@ -19,13 +19,7 @@
             </intent-filter>
         </activity>
         <activity android:name=".PhotoViewer"></activity>
-        <activity
-            android:name="com.clusterdev.malayalammemes.malayalammemes.Newsfeed"
-            android:parentActivityName="com.clusterdev.malayalammemes.malayalammemes.MainActivity" >
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.clusterdev.malayalammemes.malayalammemes.Newsfeed" />
-        </activity>
+
     </application>
 
 </manifest>

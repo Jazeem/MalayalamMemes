@@ -1,5 +1,6 @@
 package com.clusterdev.malayalammemes.malayalammemes;
 
+import android.app.Activity;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
@@ -11,7 +12,7 @@ import android.view.MenuItem;
 /**
  * Created by Edwin on 15/02/2015.
  */
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends RefreshableFragmentActivity {
 
     // Declaring Your View and Variables
 
@@ -22,6 +23,8 @@ public class MainActivity extends AppCompatActivity {
     CharSequence Titles[]={"News Feed","Favourites"};
     int Numboftabs =2;
 
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -31,7 +34,7 @@ public class MainActivity extends AppCompatActivity {
         // Creating The Toolbar and setting it as the Toolbar for the activity
 
         toolbar = (Toolbar) findViewById(R.id.tool_bar);
-        setSupportActionBar(toolbar);
+        //setSupportActionBar(toolbar);
 
 
         // Creating The ViewPagerAdapter and Passing Fragment Manager, Titles fot the Tabs and Number Of Tabs.
@@ -40,6 +43,7 @@ public class MainActivity extends AppCompatActivity {
         // Assigning ViewPager View and setting the adapter
         pager = (ViewPager) findViewById(R.id.pager);
         pager.setAdapter(adapter);
+
 
         // Assiging the Sliding Tab Layout View
         tabs = (SlidingTabLayout) findViewById(R.id.tabs);
@@ -55,5 +59,10 @@ public class MainActivity extends AppCompatActivity {
 
         // Setting the ViewPager For the SlidingTabsLayout
         tabs.setViewPager(pager);
+    }
+
+    @Override
+    public void refreshFavourites() {
+        adapter.favourites.refreshView();
     }
 }

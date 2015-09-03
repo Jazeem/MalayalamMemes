@@ -1,6 +1,9 @@
 package com.clusterdev.malayalammemes.malayalammemes;
 
-import android.app.Activity;
+import android.annotation.TargetApi;
+import android.content.SharedPreferences;
+import android.os.Build;
+import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.content.Context;
 import android.content.Intent;
@@ -10,7 +13,7 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
-import android.support.v4.app.FragmentActivity;
+import android.util.Base64;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -59,16 +62,22 @@ public class Newsfeed extends Fragment {
     private int counterLimit;
     private int imageCount = 6;
 
+    private RefreshableFragmentActivity activity; //so that we can update the view when changing sharedpreferences
+
+
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        FragmentActivity faActivity  = (FragmentActivity)    super.getActivity();
+
 
         //LinearLayout        llLayout    = (LinearLayout)    inflater.inflate(R.layout.fragment, container, false);
         View view = inflater.inflate(R.layout.newsfeed, container, false);
 
+        activity = (RefreshableFragmentActivity)getActivity();
+
         swipeRefreshLayout = (SwipyRefreshLayout) view.findViewById(R.id.swipe);
         linearLayout = (LinearLayout) view.findViewById(R.id.linearlayout);
-        context = faActivity;
+        context = getActivity();
         new RequestPost().execute(baseUrl + "internationalchaluunion/posts");
         swipeRefreshLayout.setDirection(SwipyRefreshLayoutDirection.BOTTOM);
 
@@ -252,10 +261,12 @@ public class Newsfeed extends Fragment {
 
 
             LayoutInflater vi = (LayoutInflater) getActivity().getApplicationContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            View v = vi.inflate(R.layout.troll_card, null);
+            final View cardView = vi.inflate(R.layout.troll_card, null);
+            cardView.setTag(R.string.tag_photo_id, PhotoID);
+            cardView.setTag(R.string.tag_clicked, false);
 
             //ImageView Setup
-            DynamicImageView imageView = (DynamicImageView) v.findViewById(R.id.dynamic_image_view);
+            DynamicImageView imageView = (DynamicImageView) cardView.findViewById(R.id.dynamic_image_view);
             //setting image resource
             imageView.setImageBitmap(result);
             //setting image position
@@ -275,7 +286,7 @@ public class Newsfeed extends Fragment {
 //                }
 //            });
 
-            ImageView share = (ImageView) v.findViewById(R.id.whatsapp_share);
+            ImageView share = (ImageView) cardView.findViewById(R.id.whatsapp_share);
             share.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -299,30 +310,104 @@ public class Newsfeed extends Fragment {
                 }
             });
 
-            ImageView favourite = (ImageView) v.findViewById(R.id.favourite);
+            final ImageView favourite = (ImageView) cardView.findViewById(R.id.favourite_button);
             favourite.setOnClickListener(new View.OnClickListener(){
+                @TargetApi(Build.VERSION_CODES.KITKAT)
                 public void onClick(View v) {
-                    Intent share = new Intent(Intent.ACTION_SEND);
-                    share.setType("image/*");
-                    ByteArrayOutputStream bytes = new ByteArrayOutputStream();
-                    result.compress(Bitmap.CompressFormat.JPEG, 100, bytes);
-                    File f = new File(Environment.getExternalStorageDirectory() + File.separator + "temporary_file.jpg");
-                    try {
-                        f.createNewFile();
-                        FileOutputStream fo = new FileOutputStream(f);
-                        fo.write(bytes.toByteArray());
-                        fo.close();
-                    } catch (IOException e) {
-                        e.printStackTrace();
+                    SharedPreferences favourites = PreferenceManager.getDefaultSharedPreferences(context);
+                    SharedPreferences.Editor editor = favourites.edit();
+                    String jsonString = favourites.getString("BYTE_ARRAY", "");
+                    JSONObject jsonObject = new JSONObject();
+                    if (cardView.getTag(R.string.tag_clicked).equals(false)) {
+
+
+                        JSONObject imageJSON = new JSONObject();
+
+                        ByteArrayOutputStream stream = new ByteArrayOutputStream();
+                        result.compress(Bitmap.CompressFormat.PNG, 100, stream);
+                        byte[] bytes = stream.toByteArray();
+                        String byteString = Base64.encodeToString(bytes, Base64.DEFAULT);
+                        try {
+                            imageJSON.put("photoID", cardView.getTag(R.string.tag_photo_id));
+                            imageJSON.put("byteArrayString", byteString);
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+
+
+
+
+
+                        if (jsonString.equals("")) {
+
+                            JSONArray imageJSONS = new JSONArray();
+
+                            imageJSONS.put(imageJSON);
+                            try {
+                                jsonObject.put("data", imageJSONS);
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+                            Log.v("test", "image added to sharedpref");
+
+
+                        } else {
+
+
+                            try {
+                                jsonObject = new JSONObject(jsonString);
+                                //Log.v("Array size before", ""+jsonObject.getJSONArray("data").length());
+                                //Log.v("before adding",jsonObject.getJSONArray("data").toString());
+                                jsonObject.getJSONArray("data").put(imageJSON);
+
+                                //Log.v("after adding",jsonObject.getJSONArray("data").toString());
+                                //  Log.v("Array size after", ""+jsonObject.getJSONArray("data").length());
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+
+                        }
+
+                        editor.putString("BYTE_ARRAY", jsonObject.toString());
+                        editor.commit();
+
+                        favourite.setImageResource(R.drawable.like);
+
+                        cardView.setTag(R.string.tag_clicked, true);
                     }
-                    share.putExtra(Intent.EXTRA_STREAM, Uri.fromFile(f));
-                    share.putExtra(Intent.EXTRA_TEXT, "Awesome troll send through awesome app made by awesome developer");
-                    share.setPackage("com.whatsapp");
-                    startActivityForResult(Intent.createChooser(share, "Share!"), 0);
+                    else {
+                        try {
+                            jsonObject = new JSONObject(jsonString);
+                            JSONArray jsonArray = jsonObject.getJSONArray("data");
+                            int i;
+                            Log.v("card photo id", cardView.getTag(R.string.tag_photo_id).toString());
+                            for (i=0; i<jsonArray.length(); i++){
+                                Log.v("JSON"+i,jsonArray.getJSONObject(i).get("photoID").toString());
+                                if (jsonArray.getJSONObject(i).get("photoID").equals(cardView.getTag(R.string.tag_photo_id)))
+                                    break;
+                            }
+                            if(i != jsonArray.length())
+                                jsonArray.remove(i);
+
+
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                        cardView.setTag(R.string.tag_clicked, false);
+                        favourite.setImageResource(R.drawable.like_grey);
+
+
+
+                        editor.putString("BYTE_ARRAY", jsonObject.toString());
+                        editor.commit();
+
+                    }
+                    activity.refreshFavourites();
                 }
+
             });
 
-            linearLayout.addView(v);
+            linearLayout.addView(cardView);
             swipeRefreshLayout.setRefreshing(false);
 
 

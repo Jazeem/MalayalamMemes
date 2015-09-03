@@ -2,6 +2,7 @@ package com.clusterdev.malayalammemes.malayalammemes;
 
 
 import android.app.Activity;
+import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
@@ -13,7 +14,8 @@ public class ViewPagerAdapter extends FragmentStatePagerAdapter {
 
     CharSequence Titles[]; // This will Store the Titles of the Tabs which are Going to be passed when ViewPagerAdapter is created
     int NumbOfTabs; // Store the number of tabs, this will also be passed when the ViewPagerAdapter is created
-
+    public Newsfeed newsfeed;
+    public Favourite favourites;
 
     // Build a Constructor and assign the passed Values to appropriate values in the class
     public ViewPagerAdapter(FragmentManager fm,CharSequence mTitles[], int mNumbOfTabsumb) {
@@ -21,6 +23,12 @@ public class ViewPagerAdapter extends FragmentStatePagerAdapter {
 
         this.Titles = mTitles;
         this.NumbOfTabs = mNumbOfTabsumb;
+
+        favourites = new Favourite();
+
+        newsfeed = new Newsfeed(); //so that we can update the view when changing sharedpreferences
+
+
 
     }
 
@@ -30,13 +38,13 @@ public class ViewPagerAdapter extends FragmentStatePagerAdapter {
 
         if(position == 0) // if the position is 0 we are returning the First tab
         {
-            Newsfeed newsfeed = new Newsfeed();
+
             return newsfeed;
         }
-        else             // As we are having 2 tabs if the position is now 0 it must be 1 so we are returning second tab
+        else          // As we are having 2 tabs if the position is now 0 it must be 1 so we are returning second tab
         {
-            Newsfeed newsfeed = new Newsfeed();
-            return newsfeed;
+
+            return favourites;
         }
 
     }

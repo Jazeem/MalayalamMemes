@@ -34,7 +34,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="@dimen/card_button_height"
                 android:src="@drawable/like_grey"
-                android:id="@+id/favourite"
+                android:id="@+id/favourite_button"
                 android:layout_gravity="center_vertical|right"
                 android:layout_marginRight="@dimen/card_button_margin"/>
         </FrameLayout>
