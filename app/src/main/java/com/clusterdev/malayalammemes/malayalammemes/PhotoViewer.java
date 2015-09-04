@@ -10,6 +10,7 @@ import android.os.Environment;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -23,8 +24,8 @@ import uk.co.senab.photoview.PhotoView;
  */
 public class PhotoViewer extends Activity {
     private PhotoView photoView;
-    private Button share;
-    private  Button favourite;
+    private ImageView share;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,7 +36,7 @@ public class PhotoViewer extends Activity {
         final Bitmap bmp = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
         photoView = (PhotoView)findViewById(R.id.photo_view);
         photoView.setImageBitmap(bmp);
-        share = (Button)findViewById(R.id.button);
+        share = (ImageView)findViewById(R.id.whatsapp_share);
         share.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

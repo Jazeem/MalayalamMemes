@@ -2,15 +2,36 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical" android:layout_width="match_parent"
     android:layout_height="match_parent">
+    <View
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:background="@color/photo_viewer_bg"/>
+
     <uk.co.senab.photoview.PhotoView
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
+        android:layout_marginBottom="@dimen/photo_viewer_padding"
+        
         android:id="@+id/photo_view"/>
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Click me"
-        android:id="@+id/button"/>
+    <RelativeLayout
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        >
+        <View
+            android:layout_width="fill_parent"
+            android:layout_height="@dimen/photo_viewer_bottom_strip_height"
+            android:background="@color/photo_viewer_bottom_strip"
+            android:id="@+id/bottom_strip"
+            android:layout_alignParentBottom="true"/>
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/photo_viewer_button_height"
+            android:src="@drawable/share"
+            android:id="@+id/whatsapp_share"
+            android:layout_above="@id/bottom_strip"
+            android:layout_marginBottom="@dimen/photo_viewer_bottom_strip_margin"
+            android:layout_centerHorizontal="true"/>
 
+    </RelativeLayout>
 
 </FrameLayout>
