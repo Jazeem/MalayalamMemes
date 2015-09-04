@@ -61,6 +61,7 @@ public class Newsfeed extends Fragment {
     private String nextUrl = null;
     private int counterLimit;
     private int imageCount = 6;
+    private String pageUrl;
 
     private RefreshableFragmentActivity activity; //so that we can update the view when changing sharedpreferences
 
@@ -74,11 +75,13 @@ public class Newsfeed extends Fragment {
         View view = inflater.inflate(R.layout.newsfeed, container, false);
 
         activity = (RefreshableFragmentActivity)getActivity();
+        Bundle args = getArguments();
+        pageUrl = args.getString("pageUrl","internationalchaluunion");
 
         swipeRefreshLayout = (SwipyRefreshLayout) view.findViewById(R.id.swipe);
         linearLayout = (LinearLayout) view.findViewById(R.id.linearlayout);
         context = getActivity();
-        new RequestPost().execute(baseUrl + "internationalchaluunion/posts");
+        new RequestPost().execute(baseUrl + pageUrl + "/posts");
         swipeRefreshLayout.setDirection(SwipyRefreshLayoutDirection.BOTTOM);
 
         swipeRefreshLayout.setOnRefreshListener(new SwipyRefreshLayout.OnRefreshListener() {
@@ -105,6 +108,14 @@ public class Newsfeed extends Fragment {
         });
 
         return view;
+    }
+
+    public static Newsfeed newInstance(String pageUrl) {
+        Newsfeed newsfeed = new Newsfeed();
+        Bundle args_icu = new Bundle();
+        args_icu.putString("pageUrl", pageUrl);
+        newsfeed.setArguments(args_icu);
+        return  newsfeed;
     }
 
     class RequestPost extends AsyncTask<String, String, String> {
@@ -330,6 +341,7 @@ public class Newsfeed extends Fragment {
                         try {
                             imageJSON.put("photoID", cardView.getTag(R.string.tag_photo_id));
                             imageJSON.put("byteArrayString", byteString);
+                            imageJSON.put("pageUrl",pageUrl);
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }

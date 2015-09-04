@@ -14,7 +14,7 @@ public class ViewPagerAdapter extends FragmentStatePagerAdapter {
 
     CharSequence Titles[]; // This will Store the Titles of the Tabs which are Going to be passed when ViewPagerAdapter is created
     int NumbOfTabs; // Store the number of tabs, this will also be passed when the ViewPagerAdapter is created
-    public Newsfeed newsfeed;
+    public Newsfeed icu, trollmalayalam;
     public Favourite favourites;
 
     // Build a Constructor and assign the passed Values to appropriate values in the class
@@ -24,11 +24,11 @@ public class ViewPagerAdapter extends FragmentStatePagerAdapter {
         this.Titles = mTitles;
         this.NumbOfTabs = mNumbOfTabsumb;
 
+
+
+        icu = Newsfeed.newInstance("internationalchaluunion");
+        trollmalayalam = Newsfeed.newInstance("Troll.Malayalam");
         favourites = new Favourite();
-
-        newsfeed = new Newsfeed(); //so that we can update the view when changing sharedpreferences
-
-
 
     }
 
@@ -36,15 +36,20 @@ public class ViewPagerAdapter extends FragmentStatePagerAdapter {
     @Override
     public Fragment getItem(int position) {
 
-        if(position == 0) // if the position is 0 we are returning the First tab
-        {
+        switch (position){
+            case 0:
+                //icu = Newsfeed.newInstance("internationalchaluunion");
+                return icu;
+            case 1:
+                //trollmalayalam = Newsfeed.newInstance("Troll.Malayalam");
+                return trollmalayalam;
+            case 2:
+                //favourites = new Favourite();
+                return favourites;
+            default:
+                //favourites = new Favourite();
+                return favourites;
 
-            return newsfeed;
-        }
-        else          // As we are having 2 tabs if the position is now 0 it must be 1 so we are returning second tab
-        {
-
-            return favourites;
         }
 
     }

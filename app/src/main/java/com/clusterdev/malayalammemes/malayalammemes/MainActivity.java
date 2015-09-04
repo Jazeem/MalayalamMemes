@@ -21,9 +21,9 @@ public class MainActivity extends RefreshableFragmentActivity {
     ViewPager pager;
     ViewPagerAdapter adapter;
     SlidingTabLayout tabs;
-    CharSequence Titles[]={"News Feed","Favourites"};
-    int Numboftabs =2;
-
+    CharSequence Titles[]={"ICU","Troll Malayalam","Favourites"};
+    int Numboftabs = 3;
+    private int currentPage;
 
 
     @Override
@@ -41,9 +41,14 @@ public class MainActivity extends RefreshableFragmentActivity {
         // Creating The ViewPagerAdapter and Passing Fragment Manager, Titles fot the Tabs and Number Of Tabs.
         adapter =  new ViewPagerAdapter(getSupportFragmentManager(),Titles,Numboftabs);
 
+
+
         // Assigning ViewPager View and setting the adapter
         pager = (ViewPager) findViewById(R.id.pager);
         pager.setAdapter(adapter);
+        pager.setOffscreenPageLimit(2);
+
+        //pager.setCurrentItem(1);
 
 
         // Assiging the Sliding Tab Layout View
@@ -60,6 +65,8 @@ public class MainActivity extends RefreshableFragmentActivity {
 
         // Setting the ViewPager For the SlidingTabsLayout
         tabs.setViewPager(pager);
+
+
     }
 
     @Override
@@ -68,7 +75,11 @@ public class MainActivity extends RefreshableFragmentActivity {
     }
 
     @Override
-    public LinearLayout getNewsfeedLinearLayout() {
-        return adapter.newsfeed.getLinearLayout();
+    public LinearLayout getICULinearLayout() {
+        return adapter.icu.getLinearLayout();
+    }
+    @Override
+    public LinearLayout getTrollMalayalamLinearLayout() {
+        return adapter.trollmalayalam.getLinearLayout();
     }
 }

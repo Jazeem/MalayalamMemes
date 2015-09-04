@@ -8,5 +8,6 @@ import android.widget.LinearLayout;
  */
 public abstract class RefreshableFragmentActivity extends AppCompatActivity{
     public abstract void refreshFavourites();
-    public abstract LinearLayout getNewsfeedLinearLayout();
+    public abstract LinearLayout getICULinearLayout();
+    public abstract LinearLayout getTrollMalayalamLinearLayout();
 }

@@ -1,6 +1,7 @@
 package com.clusterdev.malayalammemes.malayalammemes;
 
 import android.annotation.TargetApi;
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -31,8 +32,10 @@ import java.io.ByteArrayOutputStream;
 public class Favourite extends Fragment {
 
 
-
     private RefreshableFragmentActivity activity;
+
+
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -49,9 +52,10 @@ public class Favourite extends Fragment {
 
     public void refreshView(){
         Log.v("test", "favourite on resume");
-        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(activity);
         final SharedPreferences.Editor editor = sharedPreferences.edit();
         String byteArray = sharedPreferences.getString("BYTE_ARRAY", "");
+
         final LinearLayout linearLayout = (LinearLayout)getView().findViewById(R.id.linear_layout);
         linearLayout.removeAllViews();
         if (!byteArray.equals("")) {
@@ -110,6 +114,7 @@ public class Favourite extends Fragment {
                     @Override
                     public void onClick(View v) {
                         linearLayout.removeView(card);
+                        String pageUrl = null;
                         try {
 
                             int i;
@@ -119,14 +124,20 @@ public class Favourite extends Fragment {
                                 if (finalImageArray.getJSONObject(i).get("photoID").equals(card.getTag(R.string.tag_photo_id)))
                                     break;
                             }
-                            if(i != finalImageArray.length())
+                            if(i != finalImageArray.length()) {
+                                pageUrl = finalImageArray.getJSONObject(i).get("pageUrl").toString();
                                 finalImageArray.remove(i);
+                            }
 
 
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
-                        LinearLayout newsfeedLinearLayout = activity.getNewsfeedLinearLayout();
+                        LinearLayout newsfeedLinearLayout;
+                        if(pageUrl.equals("internationalchaluunion"))
+                            newsfeedLinearLayout = activity.getICULinearLayout();
+                        else
+                            newsfeedLinearLayout = activity.getTrollMalayalamLinearLayout();
                         int i;
                         for (i=0;i<newsfeedLinearLayout.getChildCount();i++){
                             if(newsfeedLinearLayout.getChildAt(i).getTag(R.string.tag_photo_id).equals(card.getTag(R.string.tag_photo_id)))
@@ -150,4 +161,6 @@ public class Favourite extends Fragment {
 
         }
     }
+
+
 }
