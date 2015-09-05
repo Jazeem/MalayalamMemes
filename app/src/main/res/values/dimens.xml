@@ -12,6 +12,14 @@
     <dimen name="photo_viewer_bottom_strip_margin">15dp</dimen>
     <dimen name="photo_viewer_padding">75dp</dimen>
     <dimen name="action_bar_height">50dp</dimen>
-    <dimen name="action_bar_text_size">25dp</dimen>
+    <dimen name="action_bar_text_size">15dp</dimen>
     <dimen name="main_top_text_margin">25dp</dimen>
+    <dimen name="troll_card_horizontal_padding">15dp</dimen>
+    <dimen name="troll_card_border">2dp</dimen>
+    <dimen name="troll_card_line">1dp</dimen>
+    <dimen name="troll_card_line_margin">20dp</dimen>
+    <dimen name="troll_card_button_width">25dp</dimen>
+    <dimen name="troll_card_button_height">50dp</dimen>
+    <dimen name="troll_card_button_margin">50dp</dimen>
+    <dimen name="troll_card_button_margin_top">10dp</dimen>
 </resources>

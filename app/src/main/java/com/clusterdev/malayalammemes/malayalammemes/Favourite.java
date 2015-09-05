@@ -192,6 +192,13 @@ public class Favourite extends Fragment {
 
         }
     }
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        Log.v("check", "delete");
+        File f = new File(Environment.getExternalStorageDirectory() + File.separator + "temporary_file.jpg");
+        f.delete();
+    }
 
 
 }

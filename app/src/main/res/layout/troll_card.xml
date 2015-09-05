@@ -11,8 +11,8 @@
     <LinearLayout
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:paddingLeft="15dp"
-        android:paddingRight="15dp"
+        android:paddingLeft="@dimen/troll_card_horizontal_padding"
+        android:paddingRight="@dimen/troll_card_horizontal_padding"
         android:paddingTop="@dimen/activity_vertical_margin"
 
         android:orientation="vertical">
@@ -20,35 +20,35 @@
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:id="@+id/dynamic_image_view"
-            android:src="@drawable/test"
-            android:padding="2dp"
+
+            android:padding="@dimen/troll_card_border"
 
             android:background="@color/dynamic_image_bg"
             />
         <View
             android:layout_width="fill_parent"
-            android:layout_height="1dp"
-            android:layout_marginTop="20dp"
+            android:layout_height="@dimen/troll_card_line"
+            android:layout_marginTop="@dimen/troll_card_line_margin"
             android:background="@android:color/white"/>
 
         <RelativeLayout
             android:layout_width="fill_parent"
             android:layout_height="wrap_content">
             <ImageView
-                android:layout_width="25dp"
-                android:layout_height="50dp"
+                android:layout_width="@dimen/troll_card_button_width"
+                android:layout_height="@dimen/troll_card_button_height"
                 android:src="@drawable/share"
                 android:id="@+id/whatsapp"
-                android:layout_marginLeft="50dp"
-                android:layout_marginTop="10dp"/>
+                android:layout_marginLeft="@dimen/troll_card_button_margin"
+                android:layout_marginTop="@dimen/troll_card_button_margin_top"/>
             <ImageView
                 android:layout_width="25dp"
                 android:layout_height="50dp"
                 android:src="@drawable/like_grey"
                 android:id="@+id/favourite_button"
-                android:layout_marginRight="50dp"
+                android:layout_marginRight="@dimen/troll_card_button_margin"
                 android:layout_alignParentRight="true"
-                android:layout_marginTop="10dp"/>
+                android:layout_marginTop="@dimen/troll_card_button_margin_top"/>
 
         </RelativeLayout>
     </LinearLayout>

@@ -88,7 +88,7 @@ public class Newsfeed extends Fragment {
         swipeRefreshLayout.setOnRefreshListener(new SwipyRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh(SwipyRefreshLayoutDirection swipyRefreshLayoutDirection) {
-                if (PostID != null) {
+                if (postArray != null) {
                     swipeRefreshLayout.setRefreshing(true);
                     Log.d("Swipe", "Refreshing");
                     if (counter < counterLimit) {
@@ -103,7 +103,12 @@ public class Newsfeed extends Fragment {
                         new RequestPost().execute(nextUrl);
                     }
 
-                    counter++;
+
+                }
+                else {
+                    Log.v("test", "else part called");
+                    swipeRefreshLayout.setRefreshing(true);
+                    new RequestPost().execute(baseUrl + pageUrl + "/posts");
                 }
             }
         });
@@ -157,8 +162,11 @@ public class Newsfeed extends Fragment {
 
 
             PostID = result;
-            counter++;
-            new RequestID().execute();
+            swipeRefreshLayout.setRefreshing(false);
+            if(result != null) {
+
+                new RequestID().execute();
+            }
 
         }
     }
@@ -173,7 +181,7 @@ public class Newsfeed extends Fragment {
             if(PostID != null) {
                 HttpClient httpclient = new DefaultHttpClient();
                 HttpResponse response;
-                String baseUrl = "https://graph.facebook.com/v2.4/";
+
                 HttpGet httpGet;
                 httpGet = new HttpGet(baseUrl + PostID + "?fields=object_id");
                 httpGet.setHeader("Authorization", "OAuth " + OAuth);
@@ -215,7 +223,7 @@ public class Newsfeed extends Fragment {
             HttpResponse response;
             String responseString = null;
             Bitmap bmp = null;
-            String baseUrl = "https://graph.facebook.com/v2.4/";
+
             HttpGet httpGet;
             httpGet = new HttpGet(baseUrl + PhotoID + "/picture");
             httpGet.setHeader("Authorization", "OAuth " + OAuth);
@@ -270,161 +278,189 @@ public class Newsfeed extends Fragment {
             super.onPostExecute(result);
             //Do anything with response..
 
+            if (result != null) {
 
+                LayoutInflater vi = (LayoutInflater) getActivity().getApplicationContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+                final View cardView = vi.inflate(R.layout.troll_card, null);
+                cardView.setTag(R.string.tag_photo_id, PhotoID);
 
-            LayoutInflater vi = (LayoutInflater) getActivity().getApplicationContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            final View cardView = vi.inflate(R.layout.troll_card, null);
-            cardView.setTag(R.string.tag_photo_id, PhotoID);
-            cardView.setTag(R.string.tag_clicked, false);
+                final ImageView favourite = (ImageView) cardView.findViewById(R.id.favourite_button);
 
-            //ImageView Setup
-            DynamicImageView imageView = (DynamicImageView) cardView.findViewById(R.id.dynamic_image_view);
-            //setting image resource
-            imageView.setImageBitmap(result);
-            //setting image position
+                SharedPreferences favourites = PreferenceManager.getDefaultSharedPreferences(context);
+                String jsonString = favourites.getString("BYTE_ARRAY", "");
+                if (!jsonString.equals("")) {
 
-            //imageView.setLayoutParams();
-            //adding view to layout
-            imageView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    Intent intent = new Intent(getActivity(), PhotoViewer.class);
-                    ByteArrayOutputStream stream = new ByteArrayOutputStream();
-                    result.compress(Bitmap.CompressFormat.PNG, 100, stream);
-                    byte[] bytes = stream.toByteArray();
-                    intent.putExtra("BMP",bytes);
-
-                    startActivity(intent);
-                }
-            });
-
-            ImageView share = (ImageView) cardView.findViewById(R.id.whatsapp);
-            share.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    Intent share = new Intent(Intent.ACTION_SEND);
-                    share.setType("image/*");
-                    ByteArrayOutputStream bytes = new ByteArrayOutputStream();
-                    result.compress(Bitmap.CompressFormat.JPEG, 100, bytes);
-                    File f = new File(Environment.getExternalStorageDirectory() + File.separator + "temporary_file.jpg");
                     try {
-                        f.createNewFile();
-                        FileOutputStream fo = new FileOutputStream(f);
-                        fo.write(bytes.toByteArray());
-                        fo.close();
-                    } catch (IOException e) {
+                        JSONObject jsonObject = new JSONObject(jsonString);
+                        JSONArray imageArray = jsonObject.getJSONArray("data");
+                        int i;
+
+                        for (i = 0; i < imageArray.length(); i++) {
+
+                            if (imageArray.getJSONObject(i).get("photoID").equals(PhotoID))
+                                break;
+                        }
+                        if (i != imageArray.length()) {
+                            cardView.setTag(R.string.tag_clicked, true);
+                            favourite.setImageResource(R.drawable.like);
+                        } else
+                            cardView.setTag(R.string.tag_clicked, false);
+
+
+                    } catch (JSONException e) {
                         e.printStackTrace();
                     }
-                    share.putExtra(Intent.EXTRA_STREAM, Uri.fromFile(f));
-                    share.putExtra(Intent.EXTRA_TEXT, "Shared via TrollBox http://tinyurl.com/troll");
-                    share.setPackage("com.whatsapp");
-                    startActivityForResult(Intent.createChooser(share, "Share!"), 0);
+
+
                 }
-            });
-
-            final ImageView favourite = (ImageView) cardView.findViewById(R.id.favourite_button);
-            favourite.setOnClickListener(new View.OnClickListener(){
-                @TargetApi(Build.VERSION_CODES.KITKAT)
-                public void onClick(View v) {
-                    SharedPreferences favourites = PreferenceManager.getDefaultSharedPreferences(context);
-                    SharedPreferences.Editor editor = favourites.edit();
-                    String jsonString = favourites.getString("BYTE_ARRAY", "");
-                    JSONObject jsonObject = new JSONObject();
-                    if (cardView.getTag(R.string.tag_clicked).equals(false)) {
 
 
-                        JSONObject imageJSON = new JSONObject();
+                //ImageView Setup
+                DynamicImageView imageView = (DynamicImageView) cardView.findViewById(R.id.dynamic_image_view);
+                //setting image resource
+                imageView.setImageBitmap(result);
+                //setting image position
 
+                //imageView.setLayoutParams();
+                //adding view to layout
+                imageView.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        Intent intent = new Intent(getActivity(), PhotoViewer.class);
                         ByteArrayOutputStream stream = new ByteArrayOutputStream();
                         result.compress(Bitmap.CompressFormat.PNG, 100, stream);
                         byte[] bytes = stream.toByteArray();
-                        String byteString = Base64.encodeToString(bytes, Base64.DEFAULT);
+                        intent.putExtra("BMP", bytes);
+
+                        startActivity(intent);
+                    }
+                });
+
+                ImageView share = (ImageView) cardView.findViewById(R.id.whatsapp);
+                share.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        Intent share = new Intent(Intent.ACTION_SEND);
+                        share.setType("image/*");
+                        ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+                        result.compress(Bitmap.CompressFormat.JPEG, 100, bytes);
+                        File f = new File(Environment.getExternalStorageDirectory() + File.separator + "temporary_file.jpg");
                         try {
-                            imageJSON.put("photoID", cardView.getTag(R.string.tag_photo_id));
-                            imageJSON.put("byteArrayString", byteString);
-                            imageJSON.put("pageUrl",pageUrl);
-                        } catch (JSONException e) {
+                            f.createNewFile();
+                            FileOutputStream fo = new FileOutputStream(f);
+                            fo.write(bytes.toByteArray());
+                            fo.close();
+                        } catch (IOException e) {
                             e.printStackTrace();
                         }
+                        share.putExtra(Intent.EXTRA_STREAM, Uri.fromFile(f));
+                        share.putExtra(Intent.EXTRA_TEXT, "Shared via TrollBox http://tinyurl.com/troll");
+                        share.setPackage("com.whatsapp");
+                        startActivityForResult(Intent.createChooser(share, "Share!"), 0);
+                    }
+                });
 
 
+                favourite.setOnClickListener(new View.OnClickListener() {
+                    @TargetApi(Build.VERSION_CODES.KITKAT)
+                    public void onClick(View v) {
+                        SharedPreferences favourites = PreferenceManager.getDefaultSharedPreferences(context);
+                        SharedPreferences.Editor editor = favourites.edit();
+                        String jsonString = favourites.getString("BYTE_ARRAY", "");
+                        JSONObject jsonObject = new JSONObject();
+                        if (cardView.getTag(R.string.tag_clicked).equals(false)) {
 
 
+                            JSONObject imageJSON = new JSONObject();
 
-                        if (jsonString.equals("")) {
-
-                            JSONArray imageJSONS = new JSONArray();
-
-                            imageJSONS.put(imageJSON);
+                            ByteArrayOutputStream stream = new ByteArrayOutputStream();
+                            result.compress(Bitmap.CompressFormat.PNG, 100, stream);
+                            byte[] bytes = stream.toByteArray();
+                            String byteString = Base64.encodeToString(bytes, Base64.DEFAULT);
                             try {
-                                jsonObject.put("data", imageJSONS);
+                                imageJSON.put("photoID", cardView.getTag(R.string.tag_photo_id));
+                                imageJSON.put("byteArrayString", byteString);
+                                imageJSON.put("pageUrl", pageUrl);
                             } catch (JSONException e) {
                                 e.printStackTrace();
                             }
-                            Log.v("test", "image added to sharedpref");
 
 
+                            if (jsonString.equals("")) {
+
+                                JSONArray imageJSONS = new JSONArray();
+
+                                imageJSONS.put(imageJSON);
+                                try {
+                                    jsonObject.put("data", imageJSONS);
+                                } catch (JSONException e) {
+                                    e.printStackTrace();
+                                }
+                                Log.v("test", "image added to sharedpref");
+
+
+                            } else {
+
+
+                                try {
+                                    jsonObject = new JSONObject(jsonString);
+                                    //Log.v("Array size before", ""+jsonObject.getJSONArray("data").length());
+                                    //Log.v("before adding",jsonObject.getJSONArray("data").toString());
+                                    jsonObject.getJSONArray("data").put(imageJSON);
+
+                                    //Log.v("after adding",jsonObject.getJSONArray("data").toString());
+                                    //  Log.v("Array size after", ""+jsonObject.getJSONArray("data").length());
+                                } catch (JSONException e) {
+                                    e.printStackTrace();
+                                }
+
+                            }
+
+                            editor.putString("BYTE_ARRAY", jsonObject.toString());
+                            editor.commit();
+
+                            favourite.setImageResource(R.drawable.like);
+
+                            cardView.setTag(R.string.tag_clicked, true);
                         } else {
-
-
                             try {
                                 jsonObject = new JSONObject(jsonString);
-                                //Log.v("Array size before", ""+jsonObject.getJSONArray("data").length());
-                                //Log.v("before adding",jsonObject.getJSONArray("data").toString());
-                                jsonObject.getJSONArray("data").put(imageJSON);
+                                JSONArray jsonArray = jsonObject.getJSONArray("data");
+                                int i;
+                                Log.v("card photo id", cardView.getTag(R.string.tag_photo_id).toString());
+                                for (i = 0; i < jsonArray.length(); i++) {
+                                    Log.v("JSON" + i, jsonArray.getJSONObject(i).get("photoID").toString());
+                                    if (jsonArray.getJSONObject(i).get("photoID").equals(cardView.getTag(R.string.tag_photo_id)))
+                                        break;
+                                }
+                                if (i != jsonArray.length())
+                                    jsonArray.remove(i);
 
-                                //Log.v("after adding",jsonObject.getJSONArray("data").toString());
-                                //  Log.v("Array size after", ""+jsonObject.getJSONArray("data").length());
+
                             } catch (JSONException e) {
                                 e.printStackTrace();
                             }
+                            cardView.setTag(R.string.tag_clicked, false);
+                            favourite.setImageResource(R.drawable.like_grey);
+
+
+                            editor.putString("BYTE_ARRAY", jsonObject.toString());
+                            editor.commit();
 
                         }
-
-                        editor.putString("BYTE_ARRAY", jsonObject.toString());
-                        editor.commit();
-
-                        favourite.setImageResource(R.drawable.like);
-
-                        cardView.setTag(R.string.tag_clicked, true);
+                        activity.refreshFavourites();
                     }
-                    else {
-                        try {
-                            jsonObject = new JSONObject(jsonString);
-                            JSONArray jsonArray = jsonObject.getJSONArray("data");
-                            int i;
-                            Log.v("card photo id", cardView.getTag(R.string.tag_photo_id).toString());
-                            for (i=0; i<jsonArray.length(); i++){
-                                Log.v("JSON"+i,jsonArray.getJSONObject(i).get("photoID").toString());
-                                if (jsonArray.getJSONObject(i).get("photoID").equals(cardView.getTag(R.string.tag_photo_id)))
-                                    break;
-                            }
-                            if(i != jsonArray.length())
-                                jsonArray.remove(i);
+
+                });
+
+                linearLayout.addView(cardView);
 
 
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-                        cardView.setTag(R.string.tag_clicked, false);
-                        favourite.setImageResource(R.drawable.like_grey);
+                counter++;
 
 
-
-                        editor.putString("BYTE_ARRAY", jsonObject.toString());
-                        editor.commit();
-
-                    }
-                    activity.refreshFavourites();
-                }
-
-            });
-
-            linearLayout.addView(cardView);
+            }
             swipeRefreshLayout.setRefreshing(false);
-
-
-
         }
     }
     @Override

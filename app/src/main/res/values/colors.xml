@@ -2,11 +2,12 @@
 <resources>
     <color name="card_color_1">#0b0b0c</color>
     <color name="card_color_2">#1d1e1e</color>
-    <color name="ColorPrimary">#000000</color>
+    <color name="ColorPrimary">#2f353a</color>
     <color name="ColorPrimaryDark">#00695C</color>
     <color name="tabsScrollColor">#004D40</color>
     <color name="photo_viewer_bg">#212f38</color>
-    <color name="photo_viewer_bottom_strip">#2c9a86</color>
+    <color name="photo_viewer_bottom_strip">#ffffff</color>
+    <color name="action_bar_bg">#2c9a86</color>
     <color name="dynamic_image_bg">#210d21</color>
     <color name="scroll_bg">#2f353a</color>
 </resources>
