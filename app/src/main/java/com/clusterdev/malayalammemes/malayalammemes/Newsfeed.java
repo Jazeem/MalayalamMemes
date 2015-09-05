@@ -81,6 +81,7 @@ public class Newsfeed extends Fragment {
         swipeRefreshLayout = (SwipyRefreshLayout) view.findViewById(R.id.swipe);
         linearLayout = (LinearLayout) view.findViewById(R.id.linearlayout);
         context = getActivity();
+        swipeRefreshLayout.setRefreshing(true);
         new RequestPost().execute(baseUrl + pageUrl + "/posts");
         swipeRefreshLayout.setDirection(SwipyRefreshLayoutDirection.BOTTOM);
 
