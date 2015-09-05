@@ -22,6 +22,12 @@ public class SlidingTabLayout extends HorizontalScrollView {
      * Allows complete control over the colors drawn in the tab layout. Set with
      * {@link #setCustomTabColorizer(TabColorizer)}.
      */
+
+
+
+    private int mOldPosition = 0;
+
+
     public interface TabColorizer {
 
         int getIndicatorColor(int position);

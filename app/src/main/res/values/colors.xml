@@ -6,5 +6,7 @@
     <color name="ColorPrimaryDark">#00695C</color>
     <color name="tabsScrollColor">#004D40</color>
     <color name="photo_viewer_bg">#212f38</color>
-    <color name="photo_viewer_bottom_strip">#1ca86e</color>
+    <color name="photo_viewer_bottom_strip">#2c9a86</color>
+    <color name="dynamic_image_bg">#210d21</color>
+    <color name="scroll_bg">#2f353a</color>
 </resources>

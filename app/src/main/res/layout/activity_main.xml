@@ -5,13 +5,16 @@
     android:orientation="vertical"
     tools:context=".MainActivity">
 
-    <include
-        android:id="@+id/tool_bar"
-        layout="@layout/tool_bar"
-        android:layout_height="wrap_content"
-        android:layout_width="match_parent"
-        />
-
+    <TextView
+        android:layout_width="fill_parent"
+        android:layout_height="@dimen/action_bar_height"
+        android:text="ICU"
+        android:gravity="left|center_vertical"
+        android:id="@+id/top_text_view"
+        android:paddingLeft="@dimen/main_top_text_margin"
+        android:textSize="@dimen/action_bar_text_size"
+        android:textColor="@android:color/white"
+        android:background="@color/photo_viewer_bottom_strip"/>
     <com.clusterdev.malayalammemes.malayalammemes.SlidingTabLayout
         android:id="@+id/tabs"
         android:layout_width="match_parent"
@@ -23,7 +26,7 @@
         android:id="@+id/pager"
         android:layout_height="match_parent"
         android:layout_width="match_parent"
-        android:layout_weight="1"
+
         ></android.support.v4.view.ViewPager>
 
 </LinearLayout>

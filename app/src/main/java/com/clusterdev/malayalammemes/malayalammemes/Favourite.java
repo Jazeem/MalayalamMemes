@@ -7,7 +7,9 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.Build;
+import android.os.Environment;
 import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
@@ -25,6 +27,9 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 
 /**
  * Created by Jazeem on 31/08/15.
@@ -106,6 +111,32 @@ public class Favourite extends Fragment {
 
                 ImageView fav = (ImageView)card.findViewById(R.id.favourite_button);
                 fav.setImageResource(R.drawable.like);
+
+                ImageView share = (ImageView)card.findViewById(R.id.whatsapp);
+                share.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        Log.v("clicked", "photoview");
+                        Intent share = new Intent(Intent.ACTION_SEND);
+                        share.setType("image/*");
+                        ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+                        bmp.compress(Bitmap.CompressFormat.JPEG, 100, bytes);
+                        File f = new File(Environment.getExternalStorageDirectory() + File.separator + "temporary_file.jpg");
+                        try {
+                            f.createNewFile();
+                            FileOutputStream fo = new FileOutputStream(f);
+                            fo.write(bytes.toByteArray());
+                            fo.close();
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                        share.putExtra(Intent.EXTRA_STREAM, Uri.fromFile(f));
+                        share.putExtra(Intent.EXTRA_TEXT,"Shared via TrollBox http://tinyurl.com/troll");
+                        share.setPackage("com.whatsapp");
+                        startActivityForResult(Intent.createChooser(share, "Share!"), 0);
+
+                    }
+                });
 
                 final JSONArray finalImageArray = imageArray;
                 final JSONObject finalJsonObject = jsonObject;

@@ -11,7 +11,7 @@
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
         android:layout_marginBottom="@dimen/photo_viewer_padding"
-        
+
         android:id="@+id/photo_view"/>
     <RelativeLayout
         android:layout_width="fill_parent"

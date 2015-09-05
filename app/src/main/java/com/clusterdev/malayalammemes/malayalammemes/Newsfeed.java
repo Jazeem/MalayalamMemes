@@ -297,7 +297,7 @@ public class Newsfeed extends Fragment {
                 }
             });
 
-            ImageView share = (ImageView) cardView.findViewById(R.id.whatsapp_share);
+            ImageView share = (ImageView) cardView.findViewById(R.id.whatsapp);
             share.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -315,7 +315,7 @@ public class Newsfeed extends Fragment {
                         e.printStackTrace();
                     }
                     share.putExtra(Intent.EXTRA_STREAM, Uri.fromFile(f));
-                    share.putExtra(Intent.EXTRA_TEXT, "Awesome troll send through awesome app made by awesome developer");
+                    share.putExtra(Intent.EXTRA_TEXT, "Shared via TrollBox http://tinyurl.com/troll");
                     share.setPackage("com.whatsapp");
                     startActivityForResult(Intent.createChooser(share, "Share!"), 0);
                 }
