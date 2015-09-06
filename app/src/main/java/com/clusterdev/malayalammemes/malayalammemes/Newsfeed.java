@@ -1,6 +1,8 @@
 package com.clusterdev.malayalammemes.malayalammemes;
 
 import android.annotation.TargetApi;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.graphics.Typeface;
 import android.os.Build;
@@ -327,8 +329,10 @@ public class Newsfeed extends Fragment {
                 cardView.setTag(R.string.tag_clicked,false);
                 final ImageView favourite = (ImageView) cardView.findViewById(R.id.favourite_button);
 
-                SharedPreferences favourites = PreferenceManager.getDefaultSharedPreferences(context);
+                final SharedPreferences favourites = PreferenceManager.getDefaultSharedPreferences(context);
+                final SharedPreferences.Editor editor = favourites.edit();
                 String jsonString = favourites.getString("BYTE_ARRAY", "");
+
                 if (!jsonString.equals("")) {
 
                     try {
@@ -403,8 +407,8 @@ public class Newsfeed extends Fragment {
                 favourite.setOnClickListener(new View.OnClickListener() {
                     @TargetApi(Build.VERSION_CODES.KITKAT)
                     public void onClick(View v) {
-                        SharedPreferences favourites = PreferenceManager.getDefaultSharedPreferences(context);
-                        SharedPreferences.Editor editor = favourites.edit();
+
+
                         String jsonString = favourites.getString("BYTE_ARRAY", "");
                         JSONObject jsonObject = new JSONObject();
                         if (cardView.getTag(R.string.tag_clicked).equals(false)) {
@@ -503,6 +507,43 @@ public class Newsfeed extends Fragment {
                 });
 
                 counter++;
+                if(!favourites.getBoolean("doesntWantToRate",false) && counter == 10){
+                    AlertDialog dialog;
+                    //following code will be in your activity.java file
+
+
+                    AlertDialog.Builder builder = new AlertDialog.Builder(activity);
+                    builder.setTitle("Rate Us");
+                    builder.setMessage("If you love our app, please take a moment to rate it.");
+                    builder.setNegativeButton("Rate", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int id) {
+                            //  Your code when user clicked on OK
+                            //  You can write the code  to save the selected item here
+
+                            context.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=com.bsnl.bsnlbalancechecker")));
+                            editor.putBoolean("doesntWantToRate",true);
+                            editor.commit();
+                        }
+                    }).setNeutralButton("Not Now", new DialogInterface.OnClickListener() {
+
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+
+                        }
+                    })
+                            .setPositiveButton("No, Thanks", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int id) {
+                                    //  Your code when user clicked on Cancel
+                                    editor.putBoolean("doesntWantToRate",true);
+                                    editor.commit();
+                                }
+                            });
+
+                    dialog = builder.create();//AlertDialog dialog; create like this outside onClick
+                    dialog.show();
+                }
 
 
             }
