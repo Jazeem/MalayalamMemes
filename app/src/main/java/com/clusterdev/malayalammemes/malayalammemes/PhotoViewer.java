@@ -26,7 +26,7 @@ import uk.co.senab.photoview.PhotoView;
 public class PhotoViewer extends Activity {
     private PhotoView photoView;
     private ImageView share;
-    private Button viewOnFb;
+    private ImageView viewOnFb;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,7 +39,7 @@ public class PhotoViewer extends Activity {
         photoView = (PhotoView)findViewById(R.id.photo_view);
         photoView.setImageBitmap(bmp);
         share = (ImageView)findViewById(R.id.whatsapp_share);
-        viewOnFb = (Button) findViewById(R.id.view_on_fb);
+        viewOnFb = (ImageView) findViewById(R.id.view_on_fb);
         viewOnFb.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
