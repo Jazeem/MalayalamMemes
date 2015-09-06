@@ -20,7 +20,7 @@
         <View
             android:layout_width="fill_parent"
             android:layout_height="@dimen/photo_viewer_bottom_strip_height"
-            android:background="@color/photo_viewer_bottom_strip"
+            android:background="@color/action_bar_bg"
             android:id="@+id/bottom_strip"
             android:layout_alignParentBottom="true"/>
         <LinearLayout
