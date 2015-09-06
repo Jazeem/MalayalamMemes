@@ -11,4 +11,5 @@
     <color name="dynamic_image_bg">#210d21</color>
     <color name="scroll_bg">#2f353a</color>
     <color name="error_button_pressed">#2c9a86</color>
+    <color name="shadow">#252a2c</color>
 </resources>

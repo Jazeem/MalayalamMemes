@@ -6,7 +6,8 @@
 
     android:paddingBottom="@dimen/card_margin_bottom"
 
-    android:id="@+id/base_layout">
+    android:id="@+id/base_layout"
+    android:background="@color/scroll_bg">
 
     <LinearLayout
         android:layout_width="fill_parent"
@@ -28,12 +29,13 @@
         <View
             android:layout_width="fill_parent"
             android:layout_height="@dimen/troll_card_line"
-            android:layout_marginTop="@dimen/troll_card_line_margin"
+
             android:background="@android:color/white"/>
 
         <RelativeLayout
             android:layout_width="fill_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:background="@drawable/shadow">
             <ImageView
                 android:layout_width="@dimen/troll_card_button_width"
                 android:layout_height="@dimen/troll_card_button_height"

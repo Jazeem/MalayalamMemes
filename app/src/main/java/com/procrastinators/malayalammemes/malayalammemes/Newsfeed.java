@@ -27,6 +27,7 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.orangegangsters.github.swipyrefreshlayout.library.SwipyRefreshLayout;
 import com.orangegangsters.github.swipyrefreshlayout.library.SwipyRefreshLayoutDirection;
@@ -253,8 +254,10 @@ public class Newsfeed extends Fragment {
 
 
             }
-            else
+            else {
                 swipeRefreshLayout.setRefreshing(false);
+                Toast.makeText(context, "No internet connection.", Toast.LENGTH_SHORT).show();
+            }
         }
     }
 
@@ -398,7 +401,7 @@ public class Newsfeed extends Fragment {
                             e.printStackTrace();
                         }
                         share.putExtra(Intent.EXTRA_STREAM, Uri.fromFile(f));
-                        share.putExtra(Intent.EXTRA_TEXT, "Shared via TrollBox http://tinyurl.com/troll");
+                        share.putExtra(Intent.EXTRA_TEXT, "Shared via Malayalam Trolls. http://bigaram.com/trollapp/");
                         share.setPackage("com.whatsapp");
                         startActivityForResult(Intent.createChooser(share, "Share!"), 0);
                     }
@@ -523,7 +526,7 @@ public class Newsfeed extends Fragment {
                             //  Your code when user clicked on OK
                             //  You can write the code  to save the selected item here
 
-                            context.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=com.bsnl.bsnlbalancechecker")));
+                            context.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=com.procrastinators.pling")));
                             editor.putBoolean("doesntWantToRate",true);
                             editor.commit();
                         }
@@ -549,6 +552,8 @@ public class Newsfeed extends Fragment {
 
 
             }
+            else
+                Toast.makeText(context, "No internet connection.", Toast.LENGTH_SHORT).show();
             swipeRefreshLayout.setRefreshing(false);
         }
     }
