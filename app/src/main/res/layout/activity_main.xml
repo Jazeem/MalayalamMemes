@@ -16,7 +16,7 @@
         android:textSize="@dimen/action_bar_text_size"
         android:textColor="@android:color/white"
         android:background="@color/action_bar_bg"/>
-    <com.clusterdev.malayalammemes.malayalammemes.SlidingTabLayout
+    <com.procrastinators.malayalammemes.malayalammemes.SlidingTabLayout
         android:id="@+id/tabs"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

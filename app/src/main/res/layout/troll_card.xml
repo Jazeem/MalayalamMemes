@@ -16,7 +16,7 @@
         android:paddingTop="@dimen/activity_vertical_margin"
 
         android:orientation="vertical">
-        <com.clusterdev.malayalammemes.malayalammemes.DynamicImageView
+        <com.procrastinators.malayalammemes.malayalammemes.DynamicImageView
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:id="@+id/dynamic_image_view"
