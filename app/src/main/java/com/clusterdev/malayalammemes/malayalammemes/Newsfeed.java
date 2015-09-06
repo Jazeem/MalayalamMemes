@@ -461,7 +461,7 @@ public class Newsfeed extends Fragment {
                 scrollView.post(new Runnable() {
                     @Override
                     public void run() {
-                        scrollView.smoothScrollBy(0, cardView.getHeight());
+                        scrollView.smoothScrollTo(0, cardView.getTop());
                     }
                 });
 
