@@ -111,6 +111,7 @@ public class Newsfeed extends Fragment {
             @Override
             public void onClick(View v) {
                 new RequestPost().execute(baseUrl + pageUrl + "/posts");
+                swipeRefreshLayout.setRefreshing(true);
                 errorButton.setEnabled(false);
             }
         });
