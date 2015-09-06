@@ -206,7 +206,7 @@ public class Favourite extends Fragment {
                     }
                 });
 
-                linearLayout.addView(card);
+                linearLayout.addView(card, 0);
             }
 
         }
