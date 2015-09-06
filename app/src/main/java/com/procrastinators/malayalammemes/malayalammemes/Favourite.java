@@ -1,7 +1,6 @@
-package com.clusterdev.malayalammemes.malayalammemes;
+package com.procrastinators.malayalammemes.malayalammemes;
 
 import android.annotation.TargetApi;
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -53,7 +52,7 @@ public class Favourite extends Fragment {
         favouriteTextView = (TextView)view.findViewById(R.id.favourite_message_tv);
         favouriteLayout = (RelativeLayout)view.findViewById(R.id.no_favourite_layout);
 
-        Typeface tf=Typeface.createFromAsset(activity.getAssets(),"fonts/HelveticaNeue-Thin.otf");
+        Typeface tf=Typeface.createFromAsset(activity.getAssets(), "fonts/HelveticaNeue-Thin.otf");
         favouriteTextView.setTypeface(tf);
 
         return view;

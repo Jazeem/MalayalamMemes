@@ -1,4 +1,4 @@
-package com.clusterdev.malayalammemes.malayalammemes;
+package com.procrastinators.malayalammemes.malayalammemes;
 
 import android.content.Context;
 import android.graphics.drawable.Drawable;

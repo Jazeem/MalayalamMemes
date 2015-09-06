@@ -1,4 +1,4 @@
-package com.clusterdev.malayalammemes.malayalammemes;
+package com.procrastinators.malayalammemes.malayalammemes;
 
 import android.R;
 import android.content.Context;

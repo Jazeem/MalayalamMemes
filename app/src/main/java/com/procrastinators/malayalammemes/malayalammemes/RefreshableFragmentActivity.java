@@ -1,4 +1,4 @@
-package com.clusterdev.malayalammemes.malayalammemes;
+package com.procrastinators.malayalammemes.malayalammemes;
 
 import android.support.v7.app.AppCompatActivity;
 import android.widget.LinearLayout;
