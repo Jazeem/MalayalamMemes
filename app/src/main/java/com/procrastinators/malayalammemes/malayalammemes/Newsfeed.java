@@ -406,7 +406,6 @@ public class Newsfeed extends Fragment {
 
 
                 favourite.setOnClickListener(new View.OnClickListener() {
-                    @TargetApi(Build.VERSION_CODES.KITKAT)
                     public void onClick(View v) {
 
 
@@ -479,7 +478,11 @@ public class Newsfeed extends Fragment {
                                         break;
                                 }
                                 if (i != jsonArray.length())
-                                    jsonArray.remove(i);
+                                {
+                                    JSONArray newJsonArray = JSONArrayHelper.remove(i, jsonArray);
+                                    jsonObject.put("data",newJsonArray);
+
+                                }
 
 
                             } catch (JSONException e) {
@@ -487,8 +490,6 @@ public class Newsfeed extends Fragment {
                             }
                             cardView.setTag(R.string.tag_clicked, false);
                             favourite.setImageResource(R.drawable.like_grey);
-
-
                             editor.putString("BYTE_ARRAY", jsonObject.toString());
                             editor.commit();
 

@@ -152,14 +152,18 @@ public class Favourite extends Fragment {
                     }
                 });
 
-                final JSONArray finalImageArray = imageArray;
                 final JSONObject finalJsonObject = jsonObject;
                 fav.setOnClickListener(new View.OnClickListener() {
-                    @TargetApi(Build.VERSION_CODES.KITKAT)
                     @Override
                     public void onClick(View v) {
                         linearLayout.removeView(card);
-
+                        JSONObject jsonObject1 = finalJsonObject;
+                        JSONArray finalImageArray = null;
+                        try {
+                            finalImageArray = jsonObject1.getJSONArray("data");
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
                         String pageUrl = null;
                         try {
 
@@ -172,11 +176,15 @@ public class Favourite extends Fragment {
                             }
                             if(i != finalImageArray.length()) {
                                 pageUrl = finalImageArray.getJSONObject(i).get("pageUrl").toString();
-                                finalImageArray.remove(i);
+                                JSONArray newJsonArray = JSONArrayHelper.remove(i, finalImageArray);
+
+                                if(newJsonArray.length() == 0)
+                                    favouriteLayout.setVisibility(View.VISIBLE);
+
+                                jsonObject1.put("data",newJsonArray);
+
                             }
 
-                            if(finalImageArray.length() == 0)
-                                favouriteLayout.setVisibility(View.VISIBLE);
 
 
                         } catch (JSONException e) {
@@ -199,10 +207,11 @@ public class Favourite extends Fragment {
 
                         }
 
-                        editor.putString("BYTE_ARRAY", finalJsonObject.toString());
+                        editor.putString("BYTE_ARRAY",jsonObject1.toString());
                         editor.commit();
 
                     }
+
                 });
 
                 linearLayout.addView(card, 0);
