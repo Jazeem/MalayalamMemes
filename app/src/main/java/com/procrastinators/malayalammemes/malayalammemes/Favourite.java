@@ -145,7 +145,7 @@ public class Favourite extends Fragment {
                             e.printStackTrace();
                         }
                         share.putExtra(Intent.EXTRA_STREAM, Uri.fromFile(f));
-                        share.putExtra(Intent.EXTRA_TEXT,"Shared via TrollBox http://tinyurl.com/troll");
+                        share.putExtra(Intent.EXTRA_TEXT,"Shared via Malayalam Trolls. http://bigaram.com/trollapp/");
                         share.setPackage("com.whatsapp");
                         startActivityForResult(Intent.createChooser(share, "Share!"), 0);
 
