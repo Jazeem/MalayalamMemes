@@ -32,17 +32,15 @@
                 android:layout_marginTop="@dimen/error_message_margin_top"
                 android:textColor="@android:color/white"
                 android:layout_gravity="center_horizontal"/>
-            <!-- This button is added to make all the fragment errors on the same level -->
-            <Button
-                android:id="@+id/error_button"
-                android:layout_width="@dimen/error_button_width"
-                android:layout_height="@dimen/error_button_height"
+            <!-- This button & imageview is added to make all the fragment errors on the same level -->
+            <ImageView
+                android:layout_width="@dimen/error_image_width"
+                android:layout_height="@dimen/error_image_height"
                 android:layout_gravity="center_horizontal"
+                android:layout_marginTop="@dimen/error_image_margin_top"
                 android:visibility="invisible"
-                android:layout_marginTop="@dimen/error_message_margin_bottom"
-                android:background="@drawable/error_button"
-                android:text="Try Again"
-                android:textColor="@android:color/white" />
+                android:src="@drawable/net_illa_mister"/>
+
 
         </LinearLayout>
     </RelativeLayout>

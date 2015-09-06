@@ -24,8 +24,12 @@
     <dimen name="troll_card_button_margin_top">10dp</dimen>
     <dimen name="error_icon_width">50dp</dimen>
     <dimen name="error_message_margin_top">25dp</dimen>
-    <dimen name="error_message_margin_bottom">50dp</dimen>
+
     <dimen name="error_button_width">125dp</dimen>
     <dimen name="error_button_height">35dp</dimen>
     <dimen name="error_icon_margin_top">150dp</dimen>
+    <dimen name="error_image_width">150dp</dimen>
+    <dimen name="error_image_height">50dp</dimen>
+    <dimen name="error_image_margin_top">20dp</dimen>
+    <dimen name="error_button_margin_bottom">40dp</dimen>
 </resources>
