@@ -286,7 +286,7 @@ public class Newsfeed extends Fragment {
                 LayoutInflater vi = (LayoutInflater) getActivity().getApplicationContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
                 final View cardView = vi.inflate(R.layout.troll_card, null);
                 cardView.setTag(R.string.tag_photo_id, PhotoID);
-
+                cardView.setTag(R.string.tag_clicked,false);
                 final ImageView favourite = (ImageView) cardView.findViewById(R.id.favourite_button);
 
                 SharedPreferences favourites = PreferenceManager.getDefaultSharedPreferences(context);
@@ -306,9 +306,7 @@ public class Newsfeed extends Fragment {
                         if (i != imageArray.length()) {
                             cardView.setTag(R.string.tag_clicked, true);
                             favourite.setImageResource(R.drawable.like);
-                        } else
-                            cardView.setTag(R.string.tag_clicked, false);
-
+                        }
 
                     } catch (JSONException e) {
                         e.printStackTrace();
