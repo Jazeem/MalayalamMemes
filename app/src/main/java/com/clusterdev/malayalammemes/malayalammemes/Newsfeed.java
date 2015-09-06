@@ -27,6 +27,7 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.orangegangsters.github.swipyrefreshlayout.library.SwipyRefreshLayout;
 import com.orangegangsters.github.swipyrefreshlayout.library.SwipyRefreshLayoutDirection;
@@ -253,8 +254,10 @@ public class Newsfeed extends Fragment {
 
 
             }
-            else
+            else {
                 swipeRefreshLayout.setRefreshing(false);
+                Toast.makeText(context, "No internet connection.", Toast.LENGTH_SHORT).show();
+            }
         }
     }
 
@@ -548,6 +551,8 @@ public class Newsfeed extends Fragment {
 
 
             }
+            else
+                Toast.makeText(context, "No internet connection.", Toast.LENGTH_SHORT).show();
             swipeRefreshLayout.setRefreshing(false);
         }
     }
