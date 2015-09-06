@@ -80,9 +80,11 @@ public class Favourite extends Fragment {
             String photoID = null;
             Log.v("imageArray length",""+imageArray.length());
             for (int i=0; i<imageArray.length(); i++) {
+                String link = null;
                 try {
                     byteEncoded = imageArray.getJSONObject(i).getString("byteArrayString");
                     photoID = imageArray.getJSONObject(i).getString("photoID");
+                    link = imageArray.getJSONObject(i).getString("link");
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -96,6 +98,7 @@ public class Favourite extends Fragment {
                 DynamicImageView imageView = (DynamicImageView) card.findViewById(R.id.dynamic_image_view);
                 //setting image resource
                 imageView.setImageBitmap(bmp);
+                final String finalLink = link;
                 imageView.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
@@ -104,7 +107,7 @@ public class Favourite extends Fragment {
                         bmp.compress(Bitmap.CompressFormat.PNG, 100, stream);
                         byte[] bytes = stream.toByteArray();
                         intent.putExtra("BMP",bytes);
-
+                        intent.putExtra("link", finalLink);
                         startActivity(intent);
                     }
                 });
