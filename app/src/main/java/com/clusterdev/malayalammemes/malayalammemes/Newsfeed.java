@@ -2,6 +2,7 @@ package com.clusterdev.malayalammemes.malayalammemes;
 
 import android.annotation.TargetApi;
 import android.content.SharedPreferences;
+import android.graphics.Typeface;
 import android.os.Build;
 import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
@@ -18,8 +19,10 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
@@ -64,6 +67,9 @@ public class Newsfeed extends Fragment {
     private int counterLimit;
     private int imageCount = 6;
     private String pageUrl;
+    private TextView errorTextView;
+    private Button errorButton;
+    private RelativeLayout errorLayout;
 
     private RefreshableFragmentActivity activity; //so that we can update the view when changing sharedpreferences
 
@@ -80,6 +86,10 @@ public class Newsfeed extends Fragment {
         Bundle args = getArguments();
         pageUrl = args.getString("pageUrl","internationalchaluunion");
 
+        errorTextView = (TextView)view.findViewById(R.id.error_message_tv);
+        errorButton = (Button)view.findViewById(R.id.error_button);
+        errorLayout = (RelativeLayout)view.findViewById(R.id.error_layout);
+
         swipeRefreshLayout = (SwipyRefreshLayout) view.findViewById(R.id.swipe);
         linearLayout = (LinearLayout) view.findViewById(R.id.linearlayout);
         scrollView = (ScrollView) view.findViewById(R.id.newsfeed_scrollview);
@@ -87,6 +97,20 @@ public class Newsfeed extends Fragment {
         swipeRefreshLayout.setRefreshing(true);
         new RequestPost().execute(baseUrl + pageUrl + "/posts");
         swipeRefreshLayout.setDirection(SwipyRefreshLayoutDirection.BOTTOM);
+
+        Typeface tf=Typeface.createFromAsset(activity.getAssets(),"fonts/HelveticaNeue-Thin.otf");
+
+        errorTextView.setTypeface(tf);
+        errorButton.setTypeface(tf);
+
+
+        errorButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                new RequestPost().execute(baseUrl + pageUrl + "/posts");
+                errorButton.setEnabled(false);
+            }
+        });
 
         swipeRefreshLayout.setOnRefreshListener(new SwipyRefreshLayout.OnRefreshListener() {
             @Override
@@ -167,8 +191,13 @@ public class Newsfeed extends Fragment {
             PostID = result;
             swipeRefreshLayout.setRefreshing(false);
             if(result != null) {
-
+                errorLayout.setVisibility(View.GONE);
                 new RequestID().execute();
+            }
+
+            if(PostID == null){//only happens when there is no conncetion while app is started
+                errorLayout.setVisibility(View.VISIBLE);
+                errorButton.setEnabled(true);
             }
 
         }
@@ -283,7 +312,7 @@ public class Newsfeed extends Fragment {
 
             if (result != null) {
 
-                LayoutInflater vi = (LayoutInflater) getActivity().getApplicationContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+                LayoutInflater vi = (LayoutInflater) activity.getApplicationContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
                 final View cardView = vi.inflate(R.layout.troll_card, null);
                 cardView.setTag(R.string.tag_photo_id, PhotoID);
                 cardView.setTag(R.string.tag_clicked,false);

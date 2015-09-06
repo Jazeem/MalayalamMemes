@@ -1,19 +1,64 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical" android:layout_width="fill_parent"
-    android:layout_height="wrap_content"
+    android:layout_height="fill_parent"
     android:paddingBottom="@dimen/activity_vertical_margin"
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
     android:background="@color/scroll_bg">
-    <LinearLayout
+    <RelativeLayout
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
-        android:id="@+id/linear_layout"
-        android:orientation="vertical">
+        android:visibility="gone"
+        android:id="@+id/no_favourite_layout">
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_centerVertical="true">
+            <ImageView
 
-    </LinearLayout>
+                android:layout_width="@dimen/error_icon_width"
+                android:layout_height="@dimen/error_icon_width"
+                android:src="@drawable/no_favourites"
+                android:layout_gravity="center_horizontal"/>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/favourite_message_tv"
+                android:text="No favourites added yet."
+
+                android:layout_marginTop="@dimen/error_message_margin_top"
+                android:textColor="@android:color/white"
+                android:layout_gravity="center_horizontal"/>
+            <!-- This button is added to make all the fragment errors on the same level -->
+            <Button
+                android:id="@+id/error_button"
+                android:layout_width="@dimen/error_button_width"
+                android:layout_height="@dimen/error_button_height"
+                android:layout_gravity="center_horizontal"
+                android:visibility="invisible"
+                android:layout_marginTop="@dimen/error_message_margin_bottom"
+                android:background="@drawable/error_button"
+                android:text="Try Again"
+                android:textColor="@android:color/white" />
+
+        </LinearLayout>
+    </RelativeLayout>
+    <ScrollView
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content">
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:id="@+id/linear_layout"
+            android:orientation="vertical">
 
 
-</ScrollView>
+        </LinearLayout>
+    </ScrollView>
+
+
+
+</FrameLayout>

@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Environment;
@@ -21,6 +22,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -38,7 +41,8 @@ public class Favourite extends Fragment {
 
 
     private RefreshableFragmentActivity activity;
-
+    private TextView favouriteTextView;
+    private RelativeLayout favouriteLayout;
 
 
     @Nullable
@@ -46,6 +50,12 @@ public class Favourite extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.favourite, container, false);
         activity = (RefreshableFragmentActivity)getActivity();
+        favouriteTextView = (TextView)view.findViewById(R.id.favourite_message_tv);
+        favouriteLayout = (RelativeLayout)view.findViewById(R.id.no_favourite_layout);
+
+        Typeface tf=Typeface.createFromAsset(activity.getAssets(),"fonts/HelveticaNeue-Thin.otf");
+        favouriteTextView.setTypeface(tf);
+
         return view;
     }
 
@@ -63,19 +73,21 @@ public class Favourite extends Fragment {
 
         final LinearLayout linearLayout = (LinearLayout)getView().findViewById(R.id.linear_layout);
         linearLayout.removeAllViews();
-        if (!byteArray.equals("")) {
-            JSONObject jsonObject = new JSONObject();
-            try {
-                jsonObject = new JSONObject(byteArray);
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-            JSONArray imageArray = new JSONArray();
-            try {
-                imageArray = jsonObject.getJSONArray("data");
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
+        JSONObject jsonObject = new JSONObject();
+        try {
+            jsonObject = new JSONObject(byteArray);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        JSONArray imageArray = new JSONArray();
+        try {
+            imageArray = jsonObject.getJSONArray("data");
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        if (imageArray.length() != 0) {
+            favouriteLayout.setVisibility(View.GONE);
+
             String byteEncoded = null;
             String photoID = null;
             Log.v("imageArray length",""+imageArray.length());
@@ -145,6 +157,7 @@ public class Favourite extends Fragment {
                     @Override
                     public void onClick(View v) {
                         linearLayout.removeView(card);
+
                         String pageUrl = null;
                         try {
 
@@ -159,6 +172,9 @@ public class Favourite extends Fragment {
                                 pageUrl = finalImageArray.getJSONObject(i).get("pageUrl").toString();
                                 finalImageArray.remove(i);
                             }
+
+                            if(finalImageArray.length() == 0)
+                                favouriteLayout.setVisibility(View.VISIBLE);
 
 
                         } catch (JSONException e) {
@@ -191,6 +207,10 @@ public class Favourite extends Fragment {
             }
 
         }
+        else{
+            favouriteLayout.setVisibility(View.VISIBLE);
+        }
+
     }
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
