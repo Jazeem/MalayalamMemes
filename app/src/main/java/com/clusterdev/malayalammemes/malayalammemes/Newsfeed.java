@@ -190,11 +190,13 @@ public class Newsfeed extends Fragment {
 
 
             PostID = result;
-            swipeRefreshLayout.setRefreshing(false);
+
             if(result != null) {
                 errorLayout.setVisibility(View.GONE);
                 new RequestID().execute();
             }
+            else
+                swipeRefreshLayout.setRefreshing(false);
 
             if(PostID == null){//only happens when there is no conncetion while app is started
                 errorLayout.setVisibility(View.VISIBLE);
