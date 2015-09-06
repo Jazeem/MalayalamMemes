@@ -417,6 +417,7 @@ public class Newsfeed extends Fragment {
                             try {
                                 imageJSON.put("photoID", cardView.getTag(R.string.tag_photo_id));
                                 imageJSON.put("byteArrayString", byteString);
+                                imageJSON.put("link",postUrl);
                                 imageJSON.put("pageUrl", pageUrl);
                             } catch (JSONException e) {
                                 e.printStackTrace();
