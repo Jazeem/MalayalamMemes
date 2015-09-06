@@ -31,6 +31,11 @@
             android:layout_above="@id/bottom_strip"
             android:layout_marginBottom="@dimen/photo_viewer_bottom_strip_margin"
             android:layout_centerHorizontal="true"/>
+        <Button
+            android:id="@+id/view_on_fb"
+            android:layout_width="wrap_content"
+            android:text="View on fb"
+            android:layout_height="wrap_content" />
 
     </RelativeLayout>
 

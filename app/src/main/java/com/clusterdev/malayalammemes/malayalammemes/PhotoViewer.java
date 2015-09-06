@@ -11,6 +11,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -25,7 +26,7 @@ import uk.co.senab.photoview.PhotoView;
 public class PhotoViewer extends Activity {
     private PhotoView photoView;
     private ImageView share;
-
+    private Button viewOnFb;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,10 +34,19 @@ public class PhotoViewer extends Activity {
         setContentView(R.layout.photo_viewer);
         Intent intent = getIntent();
         byte[] bytes = intent.getByteArrayExtra("BMP");
+        final String link = intent.getStringExtra("link");
         final Bitmap bmp = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
         photoView = (PhotoView)findViewById(R.id.photo_view);
         photoView.setImageBitmap(bmp);
         share = (ImageView)findViewById(R.id.whatsapp_share);
+        viewOnFb = (Button) findViewById(R.id.view_on_fb);
+        viewOnFb.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent launchBrowser = new Intent(Intent.ACTION_VIEW, Uri.parse(link));
+                startActivity(launchBrowser);
+        }});
+
         share.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
