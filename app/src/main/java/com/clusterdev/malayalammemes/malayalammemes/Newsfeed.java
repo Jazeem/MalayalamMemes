@@ -52,6 +52,7 @@ public class Newsfeed extends Fragment {
     private ImageView img;
     private String PostID = null;
     private String PhotoID = null;
+    private String postUrl = null;
     private String baseUrl = "https://graph.facebook.com/v2.4/";
     private String OAuth = "151023885236941|y1tgdIybKDV1JD6etX0AUehPFF0";
     private int counter = 0;
@@ -174,25 +175,23 @@ public class Newsfeed extends Fragment {
         }
     }
 
-    class RequestID extends AsyncTask<String, String, String> {
+    class RequestID extends AsyncTask<String, String,JSONObject> {
 
         @Override
-        protected String doInBackground(String... uri) {
+        protected JSONObject doInBackground(String... uri) {
 
-            String responseString = null;
-
+            JSONObject json=null;
             if(PostID != null) {
                 HttpClient httpclient = new DefaultHttpClient();
                 HttpResponse response;
 
                 HttpGet httpGet;
-                httpGet = new HttpGet(baseUrl + PostID + "?fields=object_id");
+                httpGet = new HttpGet(baseUrl + PostID + "?fields=object_id,link");
                 httpGet.setHeader("Authorization", "OAuth " + OAuth);
                 try {
                     response = httpclient.execute(httpGet);
-                    JSONObject json = new JSONObject(EntityUtils.toString(response.getEntity()));
-                    if(json.has("object_id"))
-                        responseString = json.get("object_id").toString();
+                     json = new JSONObject(EntityUtils.toString(response.getEntity()));
+
                     //Log.v("object_id", responseString);
                 } catch (IOException e) {
                     e.printStackTrace();
@@ -202,16 +201,23 @@ public class Newsfeed extends Fragment {
             }
 
 
-            return responseString;
+            return json;
         }
 
         @Override
-        protected void onPostExecute(String result) {
-            super.onPostExecute(result);
+        protected void onPostExecute(JSONObject jsonResult) {
+            super.onPostExecute(jsonResult);
             //Do anything with response..
-            if(result != null) {
-                PhotoID = result;
-                new RequestImageURL().execute();
+            if(jsonResult!= null) {
+                try {
+                    PhotoID = jsonResult.getString("object_id");
+                    postUrl = jsonResult.getString("link");
+                    new RequestImageURL().execute();
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
+
             }
             else
                 swipeRefreshLayout.setRefreshing(false);
@@ -286,6 +292,7 @@ public class Newsfeed extends Fragment {
                 LayoutInflater vi = (LayoutInflater) getActivity().getApplicationContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
                 final View cardView = vi.inflate(R.layout.troll_card, null);
                 cardView.setTag(R.string.tag_photo_id, PhotoID);
+                cardView.setTag(R.string.tag_post_url,postUrl);
                 cardView.setTag(R.string.tag_clicked,false);
                 final ImageView favourite = (ImageView) cardView.findViewById(R.id.favourite_button);
 
@@ -332,7 +339,7 @@ public class Newsfeed extends Fragment {
                         result.compress(Bitmap.CompressFormat.PNG, 100, stream);
                         byte[] bytes = stream.toByteArray();
                         intent.putExtra("BMP", bytes);
-
+                        intent.putExtra("link",postUrl);
                         startActivity(intent);
                     }
                 });
