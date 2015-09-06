@@ -20,6 +20,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ScrollView;
 import android.widget.TextView;
 
 import com.orangegangsters.github.swipyrefreshlayout.library.SwipyRefreshLayout;
@@ -57,6 +58,7 @@ public class Newsfeed extends Fragment {
     private JSONArray postArray = null;
     private Context context;
     private LinearLayout linearLayout;
+    private ScrollView scrollView;
     private SwipyRefreshLayout swipeRefreshLayout;
     private String nextUrl = null;
     private int counterLimit;
@@ -80,6 +82,7 @@ public class Newsfeed extends Fragment {
 
         swipeRefreshLayout = (SwipyRefreshLayout) view.findViewById(R.id.swipe);
         linearLayout = (LinearLayout) view.findViewById(R.id.linearlayout);
+        scrollView = (ScrollView) view.findViewById(R.id.newsfeed_scrollview);
         context = getActivity();
         swipeRefreshLayout.setRefreshing(true);
         new RequestPost().execute(baseUrl + pageUrl + "/posts");
@@ -454,7 +457,13 @@ public class Newsfeed extends Fragment {
                 });
 
                 linearLayout.addView(cardView);
-
+                scrollView.setSmoothScrollingEnabled(true);
+                scrollView.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        scrollView.smoothScrollBy(0, cardView.getHeight());
+                    }
+                });
 
                 counter++;
 
