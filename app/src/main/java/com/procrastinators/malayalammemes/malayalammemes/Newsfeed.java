@@ -4,6 +4,7 @@ import android.annotation.TargetApi;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
+import android.graphics.Rect;
 import android.graphics.Typeface;
 import android.os.Build;
 import android.preference.PreferenceManager;
@@ -21,6 +22,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -74,7 +76,6 @@ public class Newsfeed extends Fragment {
     private TextView errorTextView;
     private Button errorButton;
     private RelativeLayout errorLayout;
-
     private RefreshableFragmentActivity activity; //so that we can update the view when changing sharedpreferences
 
 
@@ -97,6 +98,24 @@ public class Newsfeed extends Fragment {
         swipeRefreshLayout = (SwipyRefreshLayout) view.findViewById(R.id.swipe);
         linearLayout = (LinearLayout) view.findViewById(R.id.linearlayout);
         scrollView = (ScrollView) view.findViewById(R.id.newsfeed_scrollview);
+
+        scrollView.getViewTreeObserver().addOnScrollChangedListener(new ViewTreeObserver.OnScrollChangedListener() {
+            @Override
+            public void onScrollChanged() {
+                Rect scrollBounds = new Rect();
+                scrollView.getHitRect(scrollBounds);
+                if (linearLayout.getChildCount() != 0 && linearLayout.getChildAt(linearLayout.getChildCount() - 1).getLocalVisibleRect(scrollBounds) && !swipeRefreshLayout.isRefreshing()) {
+                    // Any portion of the imageView, even a single pixel, is within the visible window
+
+                    getNewPost();
+                }
+            }
+        });
+
+
+
+
+
         context = getActivity();
         swipeRefreshLayout.setRefreshing(true);
         new RequestPost().execute(baseUrl + pageUrl + "/posts");
@@ -120,32 +139,37 @@ public class Newsfeed extends Fragment {
         swipeRefreshLayout.setOnRefreshListener(new SwipyRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh(SwipyRefreshLayoutDirection swipyRefreshLayoutDirection) {
-                if (postArray != null) {
-                    swipeRefreshLayout.setRefreshing(true);
-                    Log.d("Swipe", "Refreshing");
-                    if (counter < counterLimit) {
-                        try {
-                            PostID = postArray.getJSONObject(counter).get("id").toString();
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-                        new RequestID().execute();
-                    } else {
-                        counter = 0;
-                        new RequestPost().execute(nextUrl);
-                    }
 
-
-                }
-                else {
-                    Log.v("test", "else part called");
-                    swipeRefreshLayout.setRefreshing(true);
-                    new RequestPost().execute(baseUrl + pageUrl + "/posts");
-                }
+                getNewPost();
             }
         });
 
         return view;
+    }
+
+    private void getNewPost() {
+        if (postArray != null) {
+            swipeRefreshLayout.setRefreshing(true);
+            Log.d("Swipe", "Refreshing");
+            if (counter < counterLimit) {
+                try {
+                    PostID = postArray.getJSONObject(counter).get("id").toString();
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                new RequestID().execute();
+            } else {
+                counter = 0;
+                new RequestPost().execute(nextUrl);
+            }
+
+
+        }
+        else {
+            Log.v("test", "else part called");
+            swipeRefreshLayout.setRefreshing(true);
+            new RequestPost().execute(baseUrl + pageUrl + "/posts");
+        }
     }
 
     public static Newsfeed newInstance(String pageUrl) {
@@ -323,11 +347,12 @@ public class Newsfeed extends Fragment {
         protected void onPostExecute(final Bitmap result) {
             super.onPostExecute(result);
             //Do anything with response..
-
+            LayoutInflater vi = (LayoutInflater) activity.getApplicationContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            final View cardView = vi.inflate(R.layout.troll_card, null);
             if (result != null) {
 
-                LayoutInflater vi = (LayoutInflater) activity.getApplicationContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-                final View cardView = vi.inflate(R.layout.troll_card, null);
+
+
                 cardView.setTag(R.string.tag_photo_id, PhotoID);
                 cardView.setTag(R.string.tag_post_url,postUrl);
                 cardView.setTag(R.string.tag_clicked,false);
@@ -503,15 +528,18 @@ public class Newsfeed extends Fragment {
                 });
 
                 linearLayout.addView(cardView);
-                scrollView.setSmoothScrollingEnabled(true);
-                scrollView.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        scrollView.smoothScrollTo(0, cardView.getTop());
-                    }
-                });
 
-                counter++;
+//
+//                    scrollView.setSmoothScrollingEnabled(true);
+//                    scrollView.post(new Runnable() {
+//                        @Override
+//                        public void run() {
+//                            scrollView.smoothScrollTo(0, cardView.getTop());
+//                        }
+//                    });
+//
+
+
                 if(!favourites.getBoolean("doesntWantToRate",false) && counter == 10){
                     AlertDialog dialog;
                     //following code will be in your activity.java file
@@ -549,12 +577,13 @@ public class Newsfeed extends Fragment {
                     dialog = builder.create();//AlertDialog dialog; create like this outside onClick
                     dialog.show();
                 }
-
-
+                counter++;
             }
             else
                 Toast.makeText(context, "No internet connection.", Toast.LENGTH_SHORT).show();
             swipeRefreshLayout.setRefreshing(false);
+            if(linearLayout.getChildCount() == 1)
+                getNewPost();
         }
     }
     @Override
