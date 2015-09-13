@@ -403,7 +403,7 @@ public class Newsfeed extends Fragment {
                         result.compress(Bitmap.CompressFormat.PNG, 100, stream);
                         byte[] bytes = stream.toByteArray();
                         intent.putExtra("BMP", bytes);
-                        intent.putExtra("link",postUrl);
+                        intent.putExtra("link",(String)cardView.getTag(R.string.tag_post_url));
                         startActivity(intent);
                     }
                 });
@@ -451,7 +451,7 @@ public class Newsfeed extends Fragment {
                             try {
                                 imageJSON.put("photoID", cardView.getTag(R.string.tag_photo_id));
                                 imageJSON.put("byteArrayString", byteString);
-                                imageJSON.put("link",postUrl);
+                                imageJSON.put("link",cardView.getTag(R.string.tag_post_url));
                                 imageJSON.put("pageUrl", pageUrl);
                             } catch (JSONException e) {
                                 e.printStackTrace();
