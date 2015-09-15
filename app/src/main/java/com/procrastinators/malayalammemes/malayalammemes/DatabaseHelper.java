@@ -47,11 +47,6 @@ public class DatabaseHelper {
         }
     }
 
-    /**
-     * Return a cursor object with all rows in the table.
-     *
-     * @return A cursor suitable for use in a SimpleCursorAdapter
-     */
     public Cursor getAll() {
         SQLiteDatabase db = _openHelper.getReadableDatabase();
         if (db == null) {
@@ -74,35 +69,9 @@ public class DatabaseHelper {
 
         }
     }
-    /**
-     * Return values for a single row with the specified id
-     *
-     * @param id The unique id for the row o fetch
-     * @return All column values are stored as properties in the ContentValues object
-     */
-    public ContentValues get(long id) {
-        SQLiteDatabase db = _openHelper.getReadableDatabase();
-        if (db == null) {
-            return null;
-        }
-        ContentValues row = new ContentValues();
-        Cursor cur = db.rawQuery("select title, priority from todos where _id = ?", new String[]{String.valueOf(id)});
-        if (cur.moveToNext()) {
-            row.put("title", cur.getString(0));
-            row.put("priority", cur.getInt(1));
-        }
-        cur.close();
-        db.close();
-        return row;
-    }
 
-    /**
-     * Add a new row to the database table
-     *
-     * @param title    The title value for the new row
-     * @param priority The priority value for the new row
-     * @return The unique id of the newly added row
-     */
+
+
     public long add(String photoID,String byteArrayString,String link,String pageUrl) {
         SQLiteDatabase db = _openHelper.getWritableDatabase();
         if (db == null) {
@@ -118,12 +87,7 @@ public class DatabaseHelper {
         return id;
     }
 
-    /**
-     * Delete the specified row from the database table. For simplicity reasons, nothing happens if
-     * this operation fails.
-     *
-     * @param id The unique id for the row to delete
-     */
+
     public void delete(String photoID) {
         SQLiteDatabase db = _openHelper.getWritableDatabase();
         if (db == null) {
@@ -133,23 +97,5 @@ public class DatabaseHelper {
         db.close();
     }
 
-    /**
-     * Updates a row in the database table with new column values, without changing the unique id of the row.
-     * For simplicity reasons, nothing happens if this operation fails.
-     *
-     * @param id       The unique id of the row to update
-     * @param title    The new title value
-     * @param priority The new priority value
-     */
-    public void update(long id, String title, int priority) {
-        SQLiteDatabase db = _openHelper.getWritableDatabase();
-        if (db == null) {
-            return;
-        }
-        ContentValues row = new ContentValues();
-        row.put("title", title);
-        row.put("priority", priority);
-        db.update("todos", row, "_id = ?", new String[]{String.valueOf(id)});
-        db.close();
-    }
+
 }
