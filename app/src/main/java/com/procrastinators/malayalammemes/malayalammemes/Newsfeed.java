@@ -77,8 +77,7 @@ public class Newsfeed extends Fragment {
     private Button errorButton;
     private RelativeLayout errorLayout;
     private RefreshableFragmentActivity activity; //so that we can update the view when changing sharedpreferences
-
-
+    private DatabaseHelper db;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -86,14 +85,14 @@ public class Newsfeed extends Fragment {
 
         //LinearLayout        llLayout    = (LinearLayout)    inflater.inflate(R.layout.fragment, container, false);
         View view = inflater.inflate(R.layout.newsfeed, container, false);
-
-        activity = (RefreshableFragmentActivity)getActivity();
+        db = new DatabaseHelper(getActivity().getApplicationContext());
+        activity = (RefreshableFragmentActivity) getActivity();
         Bundle args = getArguments();
-        pageUrl = args.getString("pageUrl","internationalchaluunion");
+        pageUrl = args.getString("pageUrl", "internationalchaluunion");
 
-        errorTextView = (TextView)view.findViewById(R.id.error_message_tv);
-        errorButton = (Button)view.findViewById(R.id.error_button);
-        errorLayout = (RelativeLayout)view.findViewById(R.id.error_layout);
+        errorTextView = (TextView) view.findViewById(R.id.error_message_tv);
+        errorButton = (Button) view.findViewById(R.id.error_button);
+        errorLayout = (RelativeLayout) view.findViewById(R.id.error_layout);
 
         swipeRefreshLayout = (SwipyRefreshLayout) view.findViewById(R.id.swipe);
         linearLayout = (LinearLayout) view.findViewById(R.id.linearlayout);
@@ -113,15 +112,12 @@ public class Newsfeed extends Fragment {
         });
 
 
-
-
-
         context = getActivity();
         swipeRefreshLayout.setRefreshing(true);
         new RequestPost().execute(baseUrl + pageUrl + "/posts");
         swipeRefreshLayout.setDirection(SwipyRefreshLayoutDirection.BOTTOM);
 
-        Typeface tf=Typeface.createFromAsset(activity.getAssets(),"fonts/HelveticaNeue-Thin.otf");
+        Typeface tf = Typeface.createFromAsset(activity.getAssets(), "fonts/HelveticaNeue-Thin.otf");
 
         errorTextView.setTypeface(tf);
         errorButton.setTypeface(tf);
@@ -164,8 +160,7 @@ public class Newsfeed extends Fragment {
             }
 
 
-        }
-        else {
+        } else {
             Log.v("test", "else part called");
             swipeRefreshLayout.setRefreshing(true);
             new RequestPost().execute(baseUrl + pageUrl + "/posts");
@@ -177,7 +172,7 @@ public class Newsfeed extends Fragment {
         Bundle args_icu = new Bundle();
         args_icu.putString("pageUrl", pageUrl);
         newsfeed.setArguments(args_icu);
-        return  newsfeed;
+        return newsfeed;
     }
 
     class RequestPost extends AsyncTask<String, String, String> {
@@ -219,14 +214,13 @@ public class Newsfeed extends Fragment {
 
             PostID = result;
 
-            if(result != null) {
+            if (result != null) {
                 errorLayout.setVisibility(View.GONE);
                 new RequestID().execute();
-            }
-            else
+            } else
                 swipeRefreshLayout.setRefreshing(false);
 
-            if(PostID == null){//only happens when there is no conncetion while app is started
+            if (PostID == null) {//only happens when there is no conncetion while app is started
                 errorLayout.setVisibility(View.VISIBLE);
                 errorButton.setEnabled(true);
             }
@@ -234,13 +228,13 @@ public class Newsfeed extends Fragment {
         }
     }
 
-    class RequestID extends AsyncTask<String, String,JSONObject> {
+    class RequestID extends AsyncTask<String, String, JSONObject> {
 
         @Override
         protected JSONObject doInBackground(String... uri) {
 
-            JSONObject json=null;
-            if(PostID != null) {
+            JSONObject json = null;
+            if (PostID != null) {
                 HttpClient httpclient = new DefaultHttpClient();
                 HttpResponse response;
 
@@ -249,7 +243,7 @@ public class Newsfeed extends Fragment {
                 httpGet.setHeader("Authorization", "OAuth " + OAuth);
                 try {
                     response = httpclient.execute(httpGet);
-                     json = new JSONObject(EntityUtils.toString(response.getEntity()));
+                    json = new JSONObject(EntityUtils.toString(response.getEntity()));
 
                     //Log.v("object_id", responseString);
                 } catch (IOException e) {
@@ -267,7 +261,7 @@ public class Newsfeed extends Fragment {
         protected void onPostExecute(JSONObject jsonResult) {
             super.onPostExecute(jsonResult);
             //Do anything with response..
-            if(jsonResult!= null) {
+            if (jsonResult != null) {
                 try {
                     PhotoID = jsonResult.getString("object_id");
                     postUrl = jsonResult.getString("link");
@@ -277,8 +271,7 @@ public class Newsfeed extends Fragment {
                 }
 
 
-            }
-            else {
+            } else {
                 swipeRefreshLayout.setRefreshing(false);
                 Toast.makeText(context, "No internet connection.", Toast.LENGTH_SHORT).show();
             }
@@ -352,42 +345,17 @@ public class Newsfeed extends Fragment {
             if (result != null) {
 
 
-
                 cardView.setTag(R.string.tag_photo_id, PhotoID);
-                cardView.setTag(R.string.tag_post_url,postUrl);
-                cardView.setTag(R.string.tag_clicked,false);
+                cardView.setTag(R.string.tag_post_url, postUrl);
+                cardView.setTag(R.string.tag_clicked, false);
                 final ImageView favourite = (ImageView) cardView.findViewById(R.id.favourite_button);
 
                 final SharedPreferences favourites = PreferenceManager.getDefaultSharedPreferences(context);
                 final SharedPreferences.Editor editor = favourites.edit();
-                String jsonString = favourites.getString("BYTE_ARRAY", "");
-
-                if (!jsonString.equals("")) {
-
-                    try {
-                        JSONObject jsonObject = new JSONObject(jsonString);
-                        JSONArray imageArray = jsonObject.getJSONArray("data");
-                        int i;
-
-                        for (i = 0; i < imageArray.length(); i++) {
-
-                            if (imageArray.getJSONObject(i).get("photoID").equals(PhotoID))
-                                break;
-                        }
-                        if (i != imageArray.length()) {
-                            cardView.setTag(R.string.tag_clicked, true);
-                            favourite.setImageResource(R.drawable.like);
-                        }
-
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
-
-
+                if (db.isInFavourite(PhotoID)) {
+                    cardView.setTag(R.string.tag_clicked, true);
+                    favourite.setImageResource(R.drawable.like);
                 }
-
-
-                //ImageView Setup
                 DynamicImageView imageView = (DynamicImageView) cardView.findViewById(R.id.dynamic_image_view);
                 //setting image resource
                 imageView.setImageBitmap(result);
@@ -403,7 +371,7 @@ public class Newsfeed extends Fragment {
                         result.compress(Bitmap.CompressFormat.PNG, 100, stream);
                         byte[] bytes = stream.toByteArray();
                         intent.putExtra("BMP", bytes);
-                        intent.putExtra("link",(String)cardView.getTag(R.string.tag_post_url));
+                        intent.putExtra("link", (String) cardView.getTag(R.string.tag_post_url));
                         startActivity(intent);
                     }
                 });
@@ -436,91 +404,19 @@ public class Newsfeed extends Fragment {
                 favourite.setOnClickListener(new View.OnClickListener() {
                     public void onClick(View v) {
 
-
-                        String jsonString = favourites.getString("BYTE_ARRAY", "");
-                        JSONObject jsonObject = new JSONObject();
                         if (cardView.getTag(R.string.tag_clicked).equals(false)) {
-
-
-                            JSONObject imageJSON = new JSONObject();
-
                             ByteArrayOutputStream stream = new ByteArrayOutputStream();
                             result.compress(Bitmap.CompressFormat.PNG, 100, stream);
                             byte[] bytes = stream.toByteArray();
                             String byteString = Base64.encodeToString(bytes, Base64.DEFAULT);
-                            try {
-                                imageJSON.put("photoID", cardView.getTag(R.string.tag_photo_id));
-                                imageJSON.put("byteArrayString", byteString);
-                                imageJSON.put("link",cardView.getTag(R.string.tag_post_url));
-                                imageJSON.put("pageUrl", pageUrl);
-                            } catch (JSONException e) {
-                                e.printStackTrace();
-                            }
-
-
-                            if (jsonString.equals("")) {
-
-                                JSONArray imageJSONS = new JSONArray();
-
-                                imageJSONS.put(imageJSON);
-                                try {
-                                    jsonObject.put("data", imageJSONS);
-                                } catch (JSONException e) {
-                                    e.printStackTrace();
-                                }
-                                Log.v("test", "image added to sharedpref");
-
-
-                            } else {
-
-
-                                try {
-                                    jsonObject = new JSONObject(jsonString);
-                                    //Log.v("Array size before", ""+jsonObject.getJSONArray("data").length());
-                                    //Log.v("before adding",jsonObject.getJSONArray("data").toString());
-                                    jsonObject.getJSONArray("data").put(imageJSON);
-
-                                    //Log.v("after adding",jsonObject.getJSONArray("data").toString());
-                                    //  Log.v("Array size after", ""+jsonObject.getJSONArray("data").length());
-                                } catch (JSONException e) {
-                                    e.printStackTrace();
-                                }
-
-                            }
-
-                            editor.putString("BYTE_ARRAY", jsonObject.toString());
-                            editor.commit();
-
+                            db.add((String) cardView.getTag(R.string.tag_photo_id), byteString, (String) cardView.getTag(R.string.tag_post_url),
+                                    pageUrl);
                             favourite.setImageResource(R.drawable.like);
-
                             cardView.setTag(R.string.tag_clicked, true);
                         } else {
-                            try {
-                                jsonObject = new JSONObject(jsonString);
-                                JSONArray jsonArray = jsonObject.getJSONArray("data");
-                                int i;
-                                Log.v("card photo id", cardView.getTag(R.string.tag_photo_id).toString());
-                                for (i = 0; i < jsonArray.length(); i++) {
-                                    Log.v("JSON" + i, jsonArray.getJSONObject(i).get("photoID").toString());
-                                    if (jsonArray.getJSONObject(i).get("photoID").equals(cardView.getTag(R.string.tag_photo_id)))
-                                        break;
-                                }
-                                if (i != jsonArray.length())
-                                {
-                                    JSONArray newJsonArray = JSONArrayHelper.remove(i, jsonArray);
-                                    jsonObject.put("data",newJsonArray);
-
-                                }
-
-
-                            } catch (JSONException e) {
-                                e.printStackTrace();
-                            }
+                            db.delete((String) cardView.getTag(R.string.tag_photo_id));
                             cardView.setTag(R.string.tag_clicked, false);
                             favourite.setImageResource(R.drawable.like_grey);
-                            editor.putString("BYTE_ARRAY", jsonObject.toString());
-                            editor.commit();
-
                         }
                         activity.refreshFavourites();
                     }
@@ -540,7 +436,7 @@ public class Newsfeed extends Fragment {
 //
 
 
-                if(!favourites.getBoolean("doesntWantToRate",false) && counter == 10){
+                if (!favourites.getBoolean("doesntWantToRate", false) && counter == 10) {
                     AlertDialog dialog;
                     //following code will be in your activity.java file
 
@@ -555,7 +451,7 @@ public class Newsfeed extends Fragment {
                             //  You can write the code  to save the selected item here
 
                             context.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=com.procrastinators.pling")));
-                            editor.putBoolean("doesntWantToRate",true);
+                            editor.putBoolean("doesntWantToRate", true);
                             editor.commit();
                         }
                     }).setNeutralButton("Not Now", new DialogInterface.OnClickListener() {
@@ -569,7 +465,7 @@ public class Newsfeed extends Fragment {
                                 @Override
                                 public void onClick(DialogInterface dialog, int id) {
                                     //  Your code when user clicked on Cancel
-                                    editor.putBoolean("doesntWantToRate",true);
+                                    editor.putBoolean("doesntWantToRate", true);
                                     editor.commit();
                                 }
                             });
@@ -578,14 +474,14 @@ public class Newsfeed extends Fragment {
                     dialog.show();
                 }
                 counter++;
-            }
-            else
+            } else
                 Toast.makeText(context, "No internet connection.", Toast.LENGTH_SHORT).show();
             swipeRefreshLayout.setRefreshing(false);
-            if(linearLayout.getChildCount() == 1)
+            if (linearLayout.getChildCount() == 1)
                 getNewPost();
         }
     }
+
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -593,7 +489,8 @@ public class Newsfeed extends Fragment {
         File f = new File(Environment.getExternalStorageDirectory() + File.separator + "temporary_file.jpg");
         f.delete();
     }
-    public LinearLayout getLinearLayout(){
+
+    public LinearLayout getLinearLayout() {
         return linearLayout;
     }
 
