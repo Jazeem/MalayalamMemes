@@ -1,6 +1,7 @@
 package com.procrastinators.malayalammemes.malayalammemes;
 
 import android.annotation.TargetApi;
+import android.app.Application;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
@@ -24,6 +25,9 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 
+import com.google.android.gms.analytics.HitBuilders;
+import com.google.android.gms.analytics.Tracker;
+
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -39,11 +43,15 @@ public class Favourite extends Fragment {
     private TextView favouriteTextView;
     private RelativeLayout favouriteLayout;
     private DatabaseHelper db ;
+    TrollApp application;
+    Tracker tracker;
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.favourite, container, false);
+        application = (TrollApp) getActivity().getApplication();
+        tracker = application.getDefaultTracker();
         activity = (RefreshableFragmentActivity) getActivity();
         db = new DatabaseHelper(activity.getApplicationContext());
         favouriteTextView = (TextView) view.findViewById(R.id.favourite_message_tv);
@@ -72,7 +80,7 @@ public class Favourite extends Fragment {
                 String byteEncoded = cursor.getString(cursor.getColumnIndex("byte_array"));
                 String photoID = cursor.getString(cursor.getColumnIndex("photo_id"));
                 String link = cursor.getString(cursor.getColumnIndex("link"));
-                String pageUrl = cursor.getString(cursor.getColumnIndex("page_url"));
+                final String pageUrl = cursor.getString(cursor.getColumnIndex("page_url"));
                 byte[] array = Base64.decode(byteEncoded, Base64.DEFAULT);
                 final Bitmap bmp = BitmapFactory.decodeByteArray(array, 0, array.length);
                 LayoutInflater vi = (LayoutInflater) getActivity().getApplicationContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -93,8 +101,14 @@ public class Favourite extends Fragment {
                         ByteArrayOutputStream stream = new ByteArrayOutputStream();
                         bmp.compress(Bitmap.CompressFormat.PNG, 100, stream);
                         byte[] bytes = stream.toByteArray();
+                        tracker.send(new HitBuilders.EventBuilder()
+                                .setCategory(pageUrl)
+                                .setAction("FullScreenView")
+                                .setLabel(finalLink)
+                                .build());
                         intent.putExtra("BMP", bytes);
                         intent.putExtra("link", finalLink);
+                        intent.putExtra("pageUrl",pageUrl);
                         startActivity(intent);
                     }
                 });
@@ -120,6 +134,11 @@ public class Favourite extends Fragment {
                         } catch (IOException e) {
                             e.printStackTrace();
                         }
+                        tracker.send(new HitBuilders.EventBuilder()
+                                .setCategory(pageUrl)
+                                .setAction("WhatsappShare")
+                                .setLabel(finalLink)
+                                .build());
                         share.putExtra(Intent.EXTRA_STREAM, Uri.fromFile(f));
                         share.putExtra(Intent.EXTRA_TEXT, "Shared via Malayalam Trolls. http://bigaram.com/trollapp/");
                         share.setPackage("com.whatsapp");
@@ -138,7 +157,11 @@ public class Favourite extends Fragment {
                         Cursor cursor= db.getAll();
                         if(cursor==null || cursor.getCount()<=0)
                             favouriteLayout.setVisibility(View.VISIBLE);
-
+                        tracker.send(new HitBuilders.EventBuilder()
+                                .setCategory(pageUrl)
+                                .setAction("RemoveFromFavourites")
+                                .setLabel(finalLink)
+                                .build());
                         LinearLayout newsfeedLinearLayout;
                         if (pageUrl.equals("internationalchaluunion"))
                             newsfeedLinearLayout = activity.getICULinearLayout();

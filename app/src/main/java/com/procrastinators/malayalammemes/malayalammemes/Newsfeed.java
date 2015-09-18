@@ -31,6 +31,7 @@ import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
 import com.orangegangsters.github.swipyrefreshlayout.library.SwipyRefreshLayout;
 import com.orangegangsters.github.swipyrefreshlayout.library.SwipyRefreshLayoutDirection;
@@ -377,15 +378,23 @@ public class Newsfeed extends Fragment {
 
                 //imageView.setLayoutParams();
                 //adding view to layout
+                final String link = (String) cardView.getTag(R.string.tag_post_url);
                 imageView.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
                         Intent intent = new Intent(getActivity(), PhotoViewer.class);
                         ByteArrayOutputStream stream = new ByteArrayOutputStream();
                         result.compress(Bitmap.CompressFormat.PNG, 100, stream);
+                        tracker.send(new HitBuilders.EventBuilder()
+                                .setCategory(pageUrl)
+                                .setAction("FullScreenView")
+                                .setLabel(link)
+                                .build());
+
                         byte[] bytes = stream.toByteArray();
                         intent.putExtra("BMP", bytes);
-                        intent.putExtra("link", (String) cardView.getTag(R.string.tag_post_url));
+                        intent.putExtra("link", link);
+                        intent.putExtra("pageUrl",pageUrl);
                         startActivity(intent);
                     }
                 });
@@ -407,6 +416,11 @@ public class Newsfeed extends Fragment {
                         } catch (IOException e) {
                             e.printStackTrace();
                         }
+                        tracker.send(new HitBuilders.EventBuilder()
+                                .setCategory(pageUrl)
+                                .setAction("WhatsappShare")
+                                .setLabel(link)
+                                .build());
                         share.putExtra(Intent.EXTRA_STREAM, Uri.fromFile(f));
                         share.putExtra(Intent.EXTRA_TEXT, "Shared via Malayalam Trolls. http://bigaram.com/trollapp/");
                         share.setPackage("com.whatsapp");
@@ -422,12 +436,22 @@ public class Newsfeed extends Fragment {
                             ByteArrayOutputStream stream = new ByteArrayOutputStream();
                             result.compress(Bitmap.CompressFormat.PNG, 100, stream);
                             byte[] bytes = stream.toByteArray();
+                            tracker.send(new HitBuilders.EventBuilder()
+                                    .setCategory(pageUrl)
+                                    .setAction("AddToFavourites")
+                                    .setLabel(link)
+                                    .build());
                             String byteString = Base64.encodeToString(bytes, Base64.DEFAULT);
                             db.add((String) cardView.getTag(R.string.tag_photo_id), byteString, (String) cardView.getTag(R.string.tag_post_url),
                                     pageUrl);
                             favourite.setImageResource(R.drawable.like);
                             cardView.setTag(R.string.tag_clicked, true);
                         } else {
+                            tracker.send(new HitBuilders.EventBuilder()
+                                    .setCategory(pageUrl)
+                                    .setAction("RemoveFromFavourites")
+                                    .setLabel(link)
+                                    .build());
                             db.delete((String) cardView.getTag(R.string.tag_photo_id));
                             cardView.setTag(R.string.tag_clicked, false);
                             favourite.setImageResource(R.drawable.like_grey);
@@ -448,6 +472,13 @@ public class Newsfeed extends Fragment {
 //                        }
 //                    });
 //
+                if(counter>0 && counter%5==0)
+                    tracker.send(new HitBuilders.EventBuilder()
+                            .setCategory(pageUrl)
+                            .setAction("PageScrolled")
+                            .setValue(counter)
+                            .build());
+
 
 
                 if (!favourites.getBoolean("doesntWantToRate", false) && counter == 10) {
