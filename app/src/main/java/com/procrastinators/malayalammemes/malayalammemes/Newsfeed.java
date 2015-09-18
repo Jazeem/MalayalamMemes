@@ -31,6 +31,7 @@ import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.analytics.Tracker;
 import com.orangegangsters.github.swipyrefreshlayout.library.SwipyRefreshLayout;
 import com.orangegangsters.github.swipyrefreshlayout.library.SwipyRefreshLayoutDirection;
 
@@ -78,6 +79,16 @@ public class Newsfeed extends Fragment {
     private RelativeLayout errorLayout;
     private RefreshableFragmentActivity activity; //so that we can update the view when changing sharedpreferences
     private DatabaseHelper db;
+    TrollApp application;
+    Tracker tracker;
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        application = (TrollApp) getActivity().getApplication();
+        tracker = application.getDefaultTracker();
+    }
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {

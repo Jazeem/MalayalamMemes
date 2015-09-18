@@ -9,6 +9,9 @@ import android.support.v7.widget.Toolbar;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.google.android.gms.analytics.GoogleAnalytics;
+import com.google.android.gms.analytics.HitBuilders;
+import com.google.android.gms.analytics.Tracker;
 /**
  * Created by Edwin on 15/02/2015.
  */
@@ -25,12 +28,17 @@ public class MainActivity extends RefreshableFragmentActivity {
     private int currentPage;
     private TextView topTextView;
 
+    TrollApp application ;
+    Tracker tracker;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        application = (TrollApp) getApplication();
+        tracker = application.getDefaultTracker();
+        GoogleAnalytics.getInstance(this).setLocalDispatchPeriod(1);
 
         // Creating The Toolbar and setting it as the Toolbar for the activity
 
@@ -60,6 +68,8 @@ public class MainActivity extends RefreshableFragmentActivity {
 
             @Override
             public void onPageSelected(int position) {
+                tracker.setScreenName((String) Titles[position]);
+                tracker.send(new HitBuilders.ScreenViewBuilder().build());
                 topTextView.setText(Titles[position]);
             }
 
