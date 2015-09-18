@@ -67,7 +67,7 @@ public class PhotoViewer extends Activity {
                 share.setType("image/*");
                 ByteArrayOutputStream bytes = new ByteArrayOutputStream();
                 bmp.compress(Bitmap.CompressFormat.JPEG, 100, bytes);
-                File f = new File(Environment.getExternalStorageDirectory() + File.separator + "temporary_file.jpg");
+                File f = FileUtil.newTempFile();
                 try {
                     f.createNewFile();
                     FileOutputStream fo = new FileOutputStream(f);
@@ -99,8 +99,6 @@ public class PhotoViewer extends Activity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        Log.v("check", "delete");
-        File f = new File(Environment.getExternalStorageDirectory() + File.separator + "temporary_file.jpg");
-        f.delete();
+        FileUtil.deleteTempFiles();
     }
 }

@@ -35,11 +35,10 @@ public class MainActivity extends RefreshableFragmentActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
         application = (TrollApp) getApplication();
         tracker = application.getDefaultTracker();
         GoogleAnalytics.getInstance(this).setLocalDispatchPeriod(1);
-
+        FileUtil.deleteTempFiles();
         // Creating The Toolbar and setting it as the Toolbar for the activity
 
 //        toolbar = (Toolbar) findViewById(R.id.tool_bar);
@@ -97,8 +96,7 @@ public class MainActivity extends RefreshableFragmentActivity {
 
         // Setting the ViewPager For the SlidingTabsLayout
         tabs.setViewPager(pager);
-
-
+        FileUtil.deleteTempFiles();
     }
 
     @Override
