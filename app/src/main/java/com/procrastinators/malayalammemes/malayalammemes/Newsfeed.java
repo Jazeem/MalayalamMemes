@@ -268,6 +268,8 @@ public class Newsfeed extends Fragment {
                     new RequestImageURL().execute();
                 } catch (JSONException e) {
                     e.printStackTrace();
+                    counter++;
+                    swipeRefreshLayout.setRefreshing(false);
                 }
 
 
@@ -275,6 +277,7 @@ public class Newsfeed extends Fragment {
                 swipeRefreshLayout.setRefreshing(false);
                 Toast.makeText(context, "No internet connection.", Toast.LENGTH_SHORT).show();
             }
+
         }
     }
 
