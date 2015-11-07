@@ -8,9 +8,11 @@ import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
+import android.provider.MediaStore;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
@@ -29,6 +31,7 @@ public class PhotoViewer extends Activity {
     private PhotoView photoView;
     private ImageView share;
     private ImageView viewOnFb;
+    private ImageView saveToGallery;
     TrollApp application;
     Tracker tracker;
 
@@ -42,7 +45,21 @@ public class PhotoViewer extends Activity {
         byte[] bytes = intent.getByteArrayExtra("BMP");
         final String link = intent.getStringExtra("link");
         final String pageUrl = intent.getStringExtra("pageUrl");
+        final String id = intent.getStringExtra("id");
         final Bitmap bmp = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+        saveToGallery = (ImageView)findViewById(R.id.save_to_gallery);
+        saveToGallery.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                tracker.send(new HitBuilders.EventBuilder()
+                        .setCategory(pageUrl)
+                        .setAction("SaveToGallery")
+                        .setLabel(link)
+                        .build());
+                MediaStore.Images.Media.insertImage(getContentResolver(), bmp, id , "Saved using Malayalam Trolls.");
+                Toast.makeText(getApplicationContext(), "Image saved to gallery.", Toast.LENGTH_SHORT).show();
+            }
+        });
         photoView = (PhotoView)findViewById(R.id.photo_view);
         photoView.setImageBitmap(bmp);
         share = (ImageView)findViewById(R.id.whatsapp_share);
@@ -65,9 +82,10 @@ public class PhotoViewer extends Activity {
                 Log.v("clicked", "photoview");
                 Intent share = new Intent(Intent.ACTION_SEND);
                 share.setType("image/*");
+                File f = FileUtil.newTempFile();
                 ByteArrayOutputStream bytes = new ByteArrayOutputStream();
                 bmp.compress(Bitmap.CompressFormat.JPEG, 100, bytes);
-                File f = FileUtil.newTempFile();
+
                 try {
                     f.createNewFile();
                     FileOutputStream fo = new FileOutputStream(f);
@@ -89,6 +107,8 @@ public class PhotoViewer extends Activity {
             }
         });
     }
+
+
     @Override
     public void onResume(){
         super.onResume();

@@ -24,23 +24,33 @@
             android:id="@+id/bottom_strip"
             android:layout_alignParentBottom="true"/>
         <LinearLayout
-            android:layout_width="wrap_content"
+            android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:layout_above="@id/bottom_strip"
             android:layout_marginBottom="@dimen/photo_viewer_bottom_strip_margin"
-            android:layout_centerHorizontal="true">
+            android:layout_centerHorizontal="true"
+            android:weightSum="3">
             <ImageView
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
+                android:layout_weight="1"
                 android:layout_height="@dimen/photo_viewer_button_height"
                 android:src="@drawable/share"
                 android:id="@+id/whatsapp_share"
                 />
             <ImageView
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="@dimen/photo_viewer_button_height"
+                android:src="@drawable/gallery"
+                android:id="@+id/save_to_gallery"/>
+            <ImageView
                 android:id="@+id/view_on_fb"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
+                android:layout_weight="1"
                 android:src="@drawable/facebook"
                 android:layout_height="@dimen/photo_viewer_button_height" />
+
 
         </LinearLayout>
 

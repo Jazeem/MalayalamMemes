@@ -382,6 +382,7 @@ public class Newsfeed extends Fragment {
                 //imageView.setLayoutParams();
                 //adding view to layout
                 final String link = (String) cardView.getTag(R.string.tag_post_url);
+                final String id = (String)cardView.getTag(R.string.tag_photo_id);
                 imageView.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
@@ -398,6 +399,7 @@ public class Newsfeed extends Fragment {
                         intent.putExtra("BMP", bytes);
                         intent.putExtra("link", link);
                         intent.putExtra("pageUrl",pageUrl);
+                        intent.putExtra("id",id);
                         startActivity(intent);
                     }
                 });
