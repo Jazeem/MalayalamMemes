@@ -7,7 +7,7 @@
     <dimen name="card_margin_bottom">9dp</dimen>
     <dimen name="card_button_height">20dp</dimen>
     <dimen name="card_button_margin">20dp</dimen>
-    <dimen name="photo_viewer_bottom_strip_height">10dp</dimen>
+    <dimen name="photo_viewer_bottom_strip_height">40dp</dimen>
     <dimen name="photo_viewer_button_height">40dp</dimen>
     <dimen name="photo_viewer_bottom_strip_margin">15dp</dimen>
     <dimen name="photo_viewer_padding">75dp</dimen>
@@ -32,4 +32,5 @@
     <dimen name="error_image_height">50dp</dimen>
     <dimen name="error_image_margin_top">20dp</dimen>
     <dimen name="error_button_margin_bottom">40dp</dimen>
+    <dimen name="photo_viewer_dock_margin_bottom">20dp</dimen>
 </resources>

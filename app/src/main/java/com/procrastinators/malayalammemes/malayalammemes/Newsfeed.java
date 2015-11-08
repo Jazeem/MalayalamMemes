@@ -4,6 +4,7 @@ import android.annotation.TargetApi;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
+import android.graphics.Canvas;
 import android.graphics.Rect;
 import android.graphics.Typeface;
 import android.os.Build;
@@ -531,6 +532,8 @@ public class Newsfeed extends Fragment {
                 getNewPost();
         }
     }
+
+    
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {

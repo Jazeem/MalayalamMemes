@@ -8,6 +8,7 @@
     <color name="photo_viewer_bg">#212f38</color>
     <color name="photo_viewer_bottom_strip">#ffffff</color>
     <color name="action_bar_bg">#2c9a86</color>
+    <color name="photo_viewer_dock_color">#1ca86e</color>
     <color name="dynamic_image_bg">#210d21</color>
     <color name="scroll_bg">#2f353a</color>
     <color name="error_button_pressed">#2c9a86</color>
