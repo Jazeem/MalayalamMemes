@@ -341,10 +341,8 @@ public class Newsfeed extends Fragment {
             if(bmp != null) {
                 int maxImageSize = 500;
                 //bmp = Bitmap.createScaledBitmap(bmp, 500, 500, false);
-                float ratio = Math.min(
-                        (float) maxImageSize / bmp.getWidth(),
-                        (float) maxImageSize / bmp.getHeight());
-                int width = Math.round((float) ratio * bmp.getWidth());
+                float ratio = (float) maxImageSize / bmp.getWidth();
+                int width = 500;
                 int height = Math.round((float) ratio * bmp.getHeight());
 
                 newBitmap = Bitmap.createScaledBitmap(bmp, width,
@@ -412,7 +410,14 @@ public class Newsfeed extends Fragment {
                         Intent share = new Intent(Intent.ACTION_SEND);
                         share.setType("image/*");
                         ByteArrayOutputStream bytes = new ByteArrayOutputStream();
-                        result.compress(Bitmap.CompressFormat.JPEG, 100, bytes);
+
+                        Log.v("Width", result.getWidth()+"");
+                        Log.v("Height", result.getHeight()+"");
+
+
+                        Bitmap bm = BitmapFactory.decodeResource(getResources(), R.drawable.footer);
+                        Bitmap footerAdded = FileUtil.combineImages(result, bm);
+                        footerAdded.compress(Bitmap.CompressFormat.JPEG, 100, bytes);
                         File f = FileUtil.newTempFile();
                         try {
                             f.createNewFile();
@@ -428,7 +433,6 @@ public class Newsfeed extends Fragment {
                                 .setLabel(link)
                                 .build());
                         share.putExtra(Intent.EXTRA_STREAM, Uri.fromFile(f));
-                        share.putExtra(Intent.EXTRA_TEXT, "Shared via Malayalam Trolls. http://bigaram.com/trollapp/");
                         share.setPackage("com.whatsapp");
                         startActivityForResult(Intent.createChooser(share, "Share!"), 0);
                     }
@@ -533,7 +537,7 @@ public class Newsfeed extends Fragment {
         }
     }
 
-    
+
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {

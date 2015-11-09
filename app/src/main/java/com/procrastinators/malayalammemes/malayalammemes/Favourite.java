@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
 import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.Build;
@@ -124,7 +125,11 @@ public class Favourite extends Fragment {
                         Intent share = new Intent(Intent.ACTION_SEND);
                         share.setType("image/*");
                         ByteArrayOutputStream bytes = new ByteArrayOutputStream();
-                        bmp.compress(Bitmap.CompressFormat.JPEG, 100, bytes);
+
+                        Bitmap bm = BitmapFactory.decodeResource(getResources(), R.drawable.footer);
+                        Bitmap footerAdded = FileUtil.combineImages(bmp, bm);
+
+                        footerAdded.compress(Bitmap.CompressFormat.JPEG, 100, bytes);
                         File f = FileUtil.newTempFile();
                         try {
                             f.createNewFile();
@@ -140,7 +145,6 @@ public class Favourite extends Fragment {
                                 .setLabel(finalLink)
                                 .build());
                         share.putExtra(Intent.EXTRA_STREAM, Uri.fromFile(f));
-                        share.putExtra(Intent.EXTRA_TEXT, "Shared via Malayalam Trolls. http://bigaram.com/trollapp/");
                         share.setPackage("com.whatsapp");
                         startActivityForResult(Intent.createChooser(share, "Share!"), 0);
 

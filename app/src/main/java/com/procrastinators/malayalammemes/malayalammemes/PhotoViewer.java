@@ -56,7 +56,10 @@ public class PhotoViewer extends Activity {
                         .setAction("SaveToGallery")
                         .setLabel(link)
                         .build());
-                MediaStore.Images.Media.insertImage(getContentResolver(), bmp, id , "Saved using Malayalam Trolls.");
+                Bitmap bm = BitmapFactory.decodeResource(getResources(), R.drawable.footer);
+                Bitmap footerAdded = FileUtil.combineImages(bmp, bm);
+
+                MediaStore.Images.Media.insertImage(getContentResolver(), footerAdded, id , "Saved using Malayalam Trolls.");
                 Toast.makeText(getApplicationContext(), "Image saved to gallery.", Toast.LENGTH_SHORT).show();
             }
         });
@@ -84,7 +87,11 @@ public class PhotoViewer extends Activity {
                 share.setType("image/*");
                 File f = FileUtil.newTempFile();
                 ByteArrayOutputStream bytes = new ByteArrayOutputStream();
-                bmp.compress(Bitmap.CompressFormat.JPEG, 100, bytes);
+
+                Bitmap bm = BitmapFactory.decodeResource(getResources(), R.drawable.footer);
+                Bitmap footerAdded = FileUtil.combineImages(bmp, bm);
+
+                footerAdded.compress(Bitmap.CompressFormat.JPEG, 100, bytes);
 
                 try {
                     f.createNewFile();
@@ -100,7 +107,6 @@ public class PhotoViewer extends Activity {
                             .setLabel(link)
                             .build());
                 share.putExtra(Intent.EXTRA_STREAM, Uri.fromFile(f));
-                share.putExtra(Intent.EXTRA_TEXT,"Shared via Malayalam Trolls. http://bigaram.com/trollapp/");
                 share.setPackage("com.whatsapp");
                 startActivityForResult(Intent.createChooser(share, "Share!"), 0);
 

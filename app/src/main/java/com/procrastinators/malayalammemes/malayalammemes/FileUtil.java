@@ -1,5 +1,8 @@
 package com.procrastinators.malayalammemes.malayalammemes;
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
 import android.os.Environment;
 
 import java.io.File;
@@ -33,4 +36,28 @@ public class FileUtil {
             for (File child : directory.listFiles())
                 child.delete();
     }
+    public static Bitmap combineImages(Bitmap c, Bitmap bm) {
+        Bitmap cs = null;
+
+
+
+        int width = c.getWidth();
+        int height = c.getHeight();
+
+
+        int footerHeight = width * bm.getHeight() / bm.getWidth();
+
+
+        cs = Bitmap.createBitmap(width, height + footerHeight, Bitmap.Config.ARGB_8888);
+
+        Canvas comboImage = new Canvas(cs);
+
+        Bitmap scaled = Bitmap.createScaledBitmap(bm, width, footerHeight, false);
+
+        comboImage.drawBitmap(c, 0f, 0f, null);
+        comboImage.drawBitmap(scaled, 0f, height, null);
+
+        return cs;
+    }
+
 }
