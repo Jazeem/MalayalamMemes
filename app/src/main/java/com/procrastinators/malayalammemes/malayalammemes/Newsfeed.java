@@ -341,8 +341,10 @@ public class Newsfeed extends Fragment {
             if(bmp != null) {
                 int maxImageSize = 500;
                 //bmp = Bitmap.createScaledBitmap(bmp, 500, 500, false);
-                float ratio = (float) maxImageSize / bmp.getWidth();
-                int width = 500;
+                float ratio = Math.min(
+                        (float) maxImageSize / bmp.getWidth(),
+                        (float) maxImageSize / bmp.getHeight());
+                int width = Math.round((float) ratio * bmp.getWidth());
                 int height = Math.round((float) ratio * bmp.getHeight());
 
                 newBitmap = Bitmap.createScaledBitmap(bmp, width,

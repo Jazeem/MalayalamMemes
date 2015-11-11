@@ -11,6 +11,7 @@ import java.io.File;
  * Created by ajnas on 19/9/15.
  */
 public class FileUtil {
+    private static final int SHARED_IMAGE_WIDTH = 1000;
     private static final String DIRECTORY_NAME = "Malayalam Trolls";
 
     private static String getDirectoryPath (){
@@ -44,6 +45,12 @@ public class FileUtil {
         int width = c.getWidth();
         int height = c.getHeight();
 
+        if(width != SHARED_IMAGE_WIDTH){
+            float ratio =  ((float)SHARED_IMAGE_WIDTH/width);
+            width = SHARED_IMAGE_WIDTH;
+            height = (int)(height * ratio);
+            c = Bitmap.createScaledBitmap(c, width, height, true);
+        }
 
         int footerHeight = width * bm.getHeight() / bm.getWidth();
 
